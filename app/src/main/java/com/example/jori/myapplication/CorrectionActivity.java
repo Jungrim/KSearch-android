@@ -14,7 +14,7 @@ public class CorrectionActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_correction);
-
+        System.out.println("ㅋㅋ");
         Intent intent = getIntent();
         String intent_name = intent.getStringExtra("intent_name");
         TextView tv = (TextView)findViewById(R.id.correction_text);
