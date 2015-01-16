@@ -1,9 +1,13 @@
 package com.example.jori.myapplication;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -25,7 +29,7 @@ import android.content.Intent;
 
 public class CheckActivity extends ActionBarActivity {
     TextView tv;
-
+    BigMiddleConnect[] partList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,79 +41,118 @@ public class CheckActivity extends ActionBarActivity {
         new JsonLoadingTask().execute();
     }
 
-    public String getJsonText() {
-        //API URL로 부터 Data를 불러와서 StringBuffer data에 append
+    public void makeDataList() {
+        //API URL로 부터 Data를 DataList를 만듬
         //추후에 StringBuffer가 아닌 Button에 append하는 식으로 수정
-        StringBuffer data = new StringBuffer();
 
         String serviceUrl = "http://api.ibtk.kr/inspectionRecognize_api/";
         String serviceKey = "48744e4796989e49eef86081ab416116?";
-        String query = "?model_query_pageable.enable=false&model_query_distinct=bigname";
+        String query = "model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"bigname\",direction:1}]}&model_query_distinct=bigname";
         String strUrl = serviceUrl + serviceKey + query;
-        //data.append(strUrl);
 
         try {
-            String line = getStringFromUrl(strUrl);
+            String line = getDataFromUrl(strUrl);
             JSONObject json = new JSONObject(line);
             JSONArray jArr = json.getJSONArray("content");
 
+            partList = new BigMiddleConnect[jArr.length()];
             for (int i = 0; i < jArr.length(); i++) {
-                //JSONArray jARR로 부터 bigname에 해당하는 data를 가져와서 append하는 부분
+                //JSONArray jARR로 부터 bigname과 bigid에 해당하는 data를 읽어옴
                 json = jArr.getJSONObject(i);
-                //data.append(json.toString());
-                String bigname = json.getString("bigname");
-                data.append("인정분야 : ").append(bigname).append("\n");
+                String bigName = json.getString("bigname");
+                String bigId = json.getString("bigid");
+                partList[i] = new BigMiddleConnect(bigName,Integer.parseInt(bigId));
+
+                //읽어온 bigid를 통해서 세부분야(middlename)을 읽어와서 parkList에 입력
+                serviceUrl = "http://www.ibtk.kr/inspectionAgencyDetail_api/";
+                serviceKey = "3f7f0c56c14ad73f3a0534ba2999f4a2?";
+                query = "model_query_pageable.enable=true&model_query_distinct=middlename&model_query={\"bigid\":\""+bigId+"\"}";
+
+                String instrUrl = serviceUrl + serviceKey + query;
+
+                String inline = getDataFromUrl(instrUrl);
+                JSONObject injson = new JSONObject(inline);
+                JSONArray injArr = injson.getJSONArray("content");
+
+                for(int j=0;j<injArr.length();j++){
+                    injson = injArr.getJSONObject(j);
+                    String middlename = injson.getString("middlename");
+                    if(middlename.length()==0){
+                        continue;
+                    }
+                    partList[i].insertMiddle(middlename);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return data.toString();
     }
 
-    public String getStringFromUrl(String url) throws UnsupportedEncodingException {
-        // 입력스트림을 "UTF-8" 를 사용해서 읽은 후, 라인 단위로 데이터를 읽을 수 있는 BufferedReader 를 생성한다.
-        BufferedReader br = new BufferedReader(new InputStreamReader(getInputStreamFromUrl(url), "UTF-8"));
+public String getDataFromUrl(String url) throws IOException {
+    // HttpURLConnection을 사용해서 주어진 URL에 대한 입력 스트림을 얻는다.
+    //얻어진 입력스트림을 한줄씩 읽어서 page에 저장하고 return한다.
+    HttpURLConnection conn = null;
+    try {
 
-        // 읽은 데이터를 저장한 StringBuffer 를 생성한다.
-        StringBuffer sb = new StringBuffer();
+        URL u = new URL(url);
+        conn = (HttpURLConnection)u.openConnection();
+        BufferedInputStream buf = new BufferedInputStream(conn.getInputStream());
+        BufferedReader bufreader = new BufferedReader(new InputStreamReader(buf,"utf-8"));
 
-        try {
-            // 라인 단위로 읽은 데이터를 임시 저장한 문자열 변수 line
-            String line = null;
-            // 라인 단위로 데이터를 읽어서 StringBuffer 에 저장한다.
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        String line = null;
+        String page = "";
+        while((line = bufreader.readLine()) != null){
+            page += line;
         }
-        return sb.toString();
+        return page;
+    } finally{
+        conn.disconnect();
     }
-
-    public static InputStream getInputStreamFromUrl(String url) {
-        InputStream contentStream = null;
-        try {
-            // HttpClient 를 사용해서 주어진 URL에 대한 입력 스트림을 얻는다.
-            HttpClient httpclient = new DefaultHttpClient();
-            HttpResponse response = httpclient.execute(new HttpGet(url));
-            contentStream = response.getEntity().getContent();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return contentStream;
-    } // getInputStreamFromUrl
+} // getInputStreamFromUrl
 
     class JsonLoadingTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... strs) {
-            return getJsonText();
+            makeDataList();
+            return "";
         } // doInBackground : 백그라운드 작업을 진행한다.
         @Override
         protected void onPostExecute(String result) {
+            //makeDataList에서 만들어진 partList를 textView에 입력한다.
+            for(int i=0;i<partList.length;i++){
+                result += "인정분야 : " + partList[i].getBigname() + "\n";
+                result += "세부분야 : " + partList[i].getMiddleList() + "\n\n";
+            }
             tv.setText(result);
         }
     }
 
+    public class BigMiddleConnect{
+        int bigId;
+        String bigname;
+        StringBuffer middleList;
+
+        public BigMiddleConnect(String bigname,int bigId){
+            middleList = new StringBuffer();
+            this.bigname = bigname;
+            this.bigId = bigId;
+        }
+
+        public void insertMiddle(String middlename){
+            middleList.append(middlename).append(",");
+        }
+
+        public String getBigname(){
+            return bigname;
+        }
+
+        public String getMiddleList(){
+            return middleList.toString();
+        }
+        public int getBigId(){
+            return bigId;
+        }
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
