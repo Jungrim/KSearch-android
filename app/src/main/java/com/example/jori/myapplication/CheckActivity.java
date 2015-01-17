@@ -18,6 +18,10 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 
 import android.app.Activity;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -25,19 +29,42 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.os.AsyncTask;
 import android.content.Intent;
+import android.widget.Toast;
 
 
 public class CheckActivity extends ActionBarActivity {
     TextView tv;
     BigMiddleConnect[] partList;
+    Spinner spinner;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check);
         Intent intent = getIntent();
         String intent_name = intent.getStringExtra("intent_name");
-        tv = (TextView)findViewById(R.id.tv);
+        //tv = (TextView)findViewById(R.id.tv);
         //tv.setText(intent_name);
+        spinner = (Spinner)findViewById(R.id.check_spinner);
+        final String[] data = {"1","2","3","4","5"};
+        ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,data);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view,int position, long id){
+                Toast.makeText(getApplicationContext(),data[position],Toast.LENGTH_SHORT).show();
+
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+
+
+        });
         new JsonLoadingTask().execute();
     }
 
@@ -88,27 +115,27 @@ public class CheckActivity extends ActionBarActivity {
         }
     }
 
-public String getDataFromUrl(String url) throws IOException {
-    // HttpURLConnection을 사용해서 주어진 URL에 대한 입력 스트림을 얻는다.
-    //얻어진 입력스트림을 한줄씩 읽어서 page에 저장하고 return한다.
-    HttpURLConnection conn = null;
-    try {
+    public String getDataFromUrl(String url) throws IOException {
+        // HttpURLConnection을 사용해서 주어진 URL에 대한 입력 스트림을 얻는다.
+        //얻어진 입력스트림을 한줄씩 읽어서 page에 저장하고 return한다.
+        HttpURLConnection conn = null;
+        try {
 
-        URL u = new URL(url);
-        conn = (HttpURLConnection)u.openConnection();
-        BufferedInputStream buf = new BufferedInputStream(conn.getInputStream());
-        BufferedReader bufreader = new BufferedReader(new InputStreamReader(buf,"utf-8"));
+            URL u = new URL(url);
+            conn = (HttpURLConnection)u.openConnection();
+            BufferedInputStream buf = new BufferedInputStream(conn.getInputStream());
+            BufferedReader bufreader = new BufferedReader(new InputStreamReader(buf,"utf-8"));
 
-        String line = null;
-        String page = "";
-        while((line = bufreader.readLine()) != null){
-            page += line;
+            String line = null;
+            String page = "";
+            while((line = bufreader.readLine()) != null){
+                page += line;
+            }
+            return page;
+        } finally{
+            conn.disconnect();
         }
-        return page;
-    } finally{
-        conn.disconnect();
-    }
-} // getInputStreamFromUrl
+    } // getInputStreamFromUrl
 
     class JsonLoadingTask extends AsyncTask<String, Void, String> {
         @Override
