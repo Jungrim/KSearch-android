@@ -33,82 +33,44 @@ import android.widget.Toast;
 
 
 public class CheckActivity extends ActionBarActivity {
-    TextView tv;
-    BigMiddleConnect[] partList;
-    Spinner spinner;
+    //BigMiddleConnect[] partList;
+    String[] bigList;
+    Spinner bigSpinner;
+    Spinner middleSpinner;
+    String serviceUrl;
+    String serviceKey;
+    BigMiddleConnect[] dataList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check);
         Intent intent = getIntent();
-        String intent_name = intent.getStringExtra("intent_name");
-        //tv = (TextView)findViewById(R.id.tv);
-        //tv.setText(intent_name);
-        spinner = (Spinner)findViewById(R.id.check_spinner);
-        final String[] data = {"1","2","3","4","5"};
-        ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,data);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view,int position, long id){
-                Toast.makeText(getApplicationContext(),data[position],Toast.LENGTH_SHORT).show();
-
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-
-
-        });
+        bigSpinner = (Spinner)findViewById(R.id.big_spinner);
+        middleSpinner = (Spinner)findViewById(R.id.middle_spinner);
         new JsonLoadingTask().execute();
     }
 
     public void makeDataList() {
-        //API URL로 부터 Data를 DataList를 만듬
-        //추후에 StringBuffer가 아닌 Button에 append하는 식으로 수정
-
-        String serviceUrl = "http://api.ibtk.kr/inspectionRecognize_api/";
-        String serviceKey = "48744e4796989e49eef86081ab416116?";
-        String query = "model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"bigname\",direction:1}]}&model_query_distinct=bigname";
+        //API URL로 부터 bigname을 가져와서 bigList에 입력
+        serviceUrl = "http://api.ibtk.kr/inspectionRecognize_api/";
+        serviceKey = "48744e4796989e49eef86081ab416116?";
+        String query = "model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"bigname\",direction:1}]}&model_query_distinct=bigid";
         String strUrl = serviceUrl + serviceKey + query;
 
         try {
             String line = getDataFromUrl(strUrl);
             JSONObject json = new JSONObject(line);
             JSONArray jArr = json.getJSONArray("content");
-
-            partList = new BigMiddleConnect[jArr.length()];
+            bigList = new String[jArr.length()];
+            dataList = new BigMiddleConnect[jArr.length()];
             for (int i = 0; i < jArr.length(); i++) {
                 //JSONArray jARR로 부터 bigname과 bigid에 해당하는 data를 읽어옴
                 json = jArr.getJSONObject(i);
                 String bigName = json.getString("bigname");
-                String bigId = json.getString("bigid");
-                partList[i] = new BigMiddleConnect(bigName,Integer.parseInt(bigId));
-
-                //읽어온 bigid를 통해서 세부분야(middlename)을 읽어와서 parkList에 입력
-                serviceUrl = "http://www.ibtk.kr/inspectionAgencyDetail_api/";
-                serviceKey = "3f7f0c56c14ad73f3a0534ba2999f4a2?";
-                query = "model_query_pageable.enable=true&model_query_distinct=middlename&model_query={\"bigid\":\""+bigId+"\"}";
-
-                String instrUrl = serviceUrl + serviceKey + query;
-
-                String inline = getDataFromUrl(instrUrl);
-                JSONObject injson = new JSONObject(inline);
-                JSONArray injArr = injson.getJSONArray("content");
-
-                for(int j=0;j<injArr.length();j++){
-                    injson = injArr.getJSONObject(j);
-                    String middlename = injson.getString("middlename");
-                    if(middlename.length()==0){
-                        continue;
-                    }
-                    partList[i].insertMiddle(middlename);
-                }
+                int bigId = Integer.parseInt(json.getString("bigid"));
+                bigList[i] = new String(bigName);
+                dataList[i] = new BigMiddleConnect(bigName,bigId);
+                dataList[i].setMiddleList();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -120,7 +82,6 @@ public class CheckActivity extends ActionBarActivity {
         //얻어진 입력스트림을 한줄씩 읽어서 page에 저장하고 return한다.
         HttpURLConnection conn = null;
         try {
-
             URL u = new URL(url);
             conn = (HttpURLConnection)u.openConnection();
             BufferedInputStream buf = new BufferedInputStream(conn.getInputStream());
@@ -135,47 +96,106 @@ public class CheckActivity extends ActionBarActivity {
         } finally{
             conn.disconnect();
         }
-    } // getInputStreamFromUrl
+    }
 
     class JsonLoadingTask extends AsyncTask<String, Void, String> {
+        ArrayAdapter bigAdapter;
+        ArrayAdapter middleAdapter;
+
         @Override
-        protected String doInBackground(String... strs) {
+        protected String doInBackground(String... str) {
             makeDataList();
+            bigAdapter = setBigAdapter();
+
             return "";
         } // doInBackground : 백그라운드 작업을 진행한다.
+
         @Override
         protected void onPostExecute(String result) {
-            //makeDataList에서 만들어진 partList를 textView에 입력한다.
-            for(int i=0;i<partList.length;i++){
-                result += "인정분야 : " + partList[i].getBigname() + "\n";
-                result += "세부분야 : " + partList[i].getMiddleList() + "\n\n";
-            }
-            tv.setText(result);
+            //makeDataList에서 만들어진 bigList를 apdater를 통해 spinner에 입력
+//            ArrayAdapter bigAdapter = new ArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,bigList);
+//            bigAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+            bigSpinner.setAdapter(bigAdapter);
+            bigSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
+                    for(int i=0;i<dataList.length;i++){
+                        if(bigList[position].equals(dataList[i].getBigname())){
+//                              Toast.makeText(getApplicationContext(), dataList[i].getMiddleList(), Toast.LENGTH_SHORT).show();
+                            ArrayAdapter middleAdapter = new ArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,dataList[i].getMiddleList());
+                            middleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+                            middleSpinner.setAdapter(middleAdapter);
+
+                        }
+                    }
+                }
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+            return;
         }
+
+    }
+
+    public ArrayAdapter setBigAdapter() {
+        ArrayAdapter tmpAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, bigList);
+        tmpAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        return tmpAdapter;
     }
 
     public class BigMiddleConnect{
         int bigId;
         String bigname;
-        StringBuffer middleList;
+        String[] middleList;
 
         public BigMiddleConnect(String bigname,int bigId){
-            middleList = new StringBuffer();
             this.bigname = bigname;
             this.bigId = bigId;
         }
 
-        public void insertMiddle(String middlename){
-            middleList.append(middlename).append(",");
+        public void setMiddleList() {
+            String inserviceUrl = "http://www.ibtk.kr/inspectionAgencyDetail_api/";
+            String inserviceKey = "3f7f0c56c14ad73f3a0534ba2999f4a2?";
+            String query = "model_query_pageable.enable=true&model_query_distinct=middlename&model_query={\"bigid\":\"0" + this.bigId + "\"}";
+            String instrUrl = inserviceUrl + inserviceKey + query;
+
+            try {
+                String inline = getDataFromUrl(instrUrl);
+                JSONObject injson = new JSONObject(inline);
+                JSONArray injArr = injson.getJSONArray("content");
+                middleList = new String[injArr.length()];
+
+                for (int j = 0; j < injArr.length(); j++) {
+                    injson = injArr.getJSONObject(j);
+                    String middleName = injson.getString("middlename");
+                    System.out.println(middleName);
+                    middleList[j] = new String(middleName);
+                }
+            } catch (Exception e){
+                return;
+                //return "middleList" + e.toString();
+            }
         }
 
         public String getBigname(){
             return bigname;
         }
 
-        public String getMiddleList(){
-            return middleList.toString();
+        public String[] getMiddleList(){
+            return middleList;
         }
+
+        public String getMiddleListTostring(){
+            String data = "";
+            for(int i=0;i<middleList.length;i++)
+                data += middleList[i];
+            return data;
+        }
+
         public int getBigId(){
             return bigId;
         }

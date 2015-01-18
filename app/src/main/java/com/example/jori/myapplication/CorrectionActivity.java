@@ -87,22 +87,22 @@ public class CorrectionActivity extends ActionBarActivity {
         }
     }
 
-    public class BigMiddleConnect{
+    public class BigMiddleConnect {
         int bigId;
         String bigname;
         StringBuffer middleList;
         String serviceUrl = "http://www.ibtk.kr/correctionalClassification_api/";
         String serviceKey = "476febb189d2992a63feba63ba5691cb?";
 
-        public BigMiddleConnect(int bigId){
+        public BigMiddleConnect(int bigId) {
             middleList = new StringBuffer();
             this.bigId = bigId;
         }
 
-        public void setMiddleData(){
+        public void setMiddleData() {
             //class의 bigid를 통해서 등록된 검사기관들의 middlename을 가져와서
             //StringBuffer인 middleList에 append한다.
-            String query = "model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"middleid\",direction:1}]}&model_query_distinct=middleid&model_query={\"bigid\":\""+bigId+"\"}";
+            String query = "model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"middleid\",direction:1}]}&model_query_distinct=middleid&model_query={\"bigid\":\"" + bigId + "\"}";
 
             String strUrl = serviceUrl + serviceKey + query;
 
@@ -118,7 +118,7 @@ public class CorrectionActivity extends ActionBarActivity {
                     middleList.append(middleid).append(",");
                     //insertMiddle(middlename);
                 }
-            } catch(Exception e){
+            } catch (Exception e) {
                 return;
             }
         }
@@ -140,7 +140,6 @@ public class CorrectionActivity extends ActionBarActivity {
     }
 
     class JsonLoadingTask extends AsyncTask<String, Void, String> {
-        String result;
         @Override
         protected String doInBackground(String... strs) {
             makeDataList();
