@@ -18,9 +18,14 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.Color;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.support.v7.app.ActionBarActivity;
@@ -37,19 +42,27 @@ public class CheckActivity extends ActionBarActivity {
     String[] bigList;
     Spinner bigSpinner;
     Spinner middleSpinner;
+    Button searchButton;
     String serviceUrl;
     String serviceKey;
     BigMiddleConnect[] dataList;
+    String selectData = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check);
-        Intent intent = getIntent();
         bigSpinner = (Spinner)findViewById(R.id.big_spinner);
         middleSpinner = (Spinner)findViewById(R.id.middle_spinner);
+        searchButton = (Button)findViewById(R.id.search_button);
+        searchButton.setOnClickListener(new searchButtonListener());
         new JsonLoadingTask().execute();
     }
-
+    public class searchButtonListener implements View.OnClickListener {
+        public void onClick(View v){
+            Toast.makeText(getApplicationContext(), selectData, Toast.LENGTH_SHORT).show();
+        }
+    }
     public void makeDataList() {
         //API URL로 부터 bigname을 가져와서 bigList에 입력
         serviceUrl = "http://api.ibtk.kr/inspectionRecognize_api/";
@@ -100,8 +113,6 @@ public class CheckActivity extends ActionBarActivity {
 
     class JsonLoadingTask extends AsyncTask<String, Void, String> {
         ArrayAdapter bigAdapter;
-        ArrayAdapter middleAdapter;
-
         @Override
         protected String doInBackground(String... str) {
             makeDataList();
@@ -121,12 +132,13 @@ public class CheckActivity extends ActionBarActivity {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
                     for(int i=0;i<dataList.length;i++){
-                        if(bigList[position].equals(dataList[i].getBigname())){
-//                              Toast.makeText(getApplicationContext(), dataList[i].getMiddleList(), Toast.LENGTH_SHORT).show();
-                            ArrayAdapter middleAdapter = new ArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,dataList[i].getMiddleList());
+                        if(bigList[position].equals(dataList[i].getBigname())) {
+//                          Toast.makeText(getApplicationContext(), dataList[i].getMiddleList(), Toast.LENGTH_SHORT).show();
+                            selectData += bigList[position];
+                            ArrayAdapter middleAdapter = new myAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, dataList[i].getMiddleList());
                             middleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
                             middleSpinner.setAdapter(middleAdapter);
-
+                            middleSpinner.setOnItemSelectedListener(new MiddleAdapterListener(i));
                         }
                     }
                 }
@@ -140,12 +152,84 @@ public class CheckActivity extends ActionBarActivity {
 
     }
 
+    public class MiddleAdapterListener implements AdapterView.OnItemSelectedListener{
+        int id;
+
+        public MiddleAdapterListener(int id){
+            this.id = id;
+        }
+
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long Id){
+            selectData += dataList[this.id].getMiddleName(position);
+        }
+
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    }
     public ArrayAdapter setBigAdapter() {
-        ArrayAdapter tmpAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, bigList);
+        ArrayAdapter tmpAdapter = new myAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, bigList);
         tmpAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         return tmpAdapter;
     }
+
+    private class myAdapter extends ArrayAdapter<String> {
+        Context context;
+        String[] items = new String[] {};
+
+        public myAdapter(final Context context,
+                              final int textViewResourceId, final String[] objects) {
+            super(context, textViewResourceId, objects);
+            this.items = objects;
+            this.context = context;
+        }
+
+        /**
+         * 스피너 클릭시 보여지는 View의 정의
+         */
+        @Override
+        public View getDropDownView(int position, View convertView,
+                                    ViewGroup parent) {
+
+            if (convertView == null) {
+                LayoutInflater inflater = LayoutInflater.from(context);
+                convertView = inflater.inflate(
+                        android.R.layout.simple_spinner_dropdown_item, parent, false);
+            }
+
+            TextView tv = (TextView) convertView.findViewById(android.R.id.text1);
+            tv.setText(items[position]);
+            tv.setTextColor(Color.BLACK);
+            tv.setTextSize(12);
+            tv.setHeight(50);
+            return convertView;
+        }
+
+        /**
+         * 기본 스피너 View 정의
+         */
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                LayoutInflater inflater = LayoutInflater.from(context);
+                convertView = inflater.inflate(
+                        android.R.layout.simple_spinner_item, parent, false);
+            }
+
+            TextView tv = (TextView) convertView
+                    .findViewById(android.R.id.text1);
+            tv.setText(items[position]);
+            tv.setText(items[position]);
+            tv.setTextColor(Color.BLACK);
+            tv.setTextSize(12);
+            tv.setHeight(50);
+
+            tv.setTextSize(12);
+            return convertView;
+        }
+    }
+
 
     public class BigMiddleConnect{
         int bigId;
@@ -188,7 +272,9 @@ public class CheckActivity extends ActionBarActivity {
         public String[] getMiddleList(){
             return middleList;
         }
-
+        public String getMiddleName(int id){
+            return middleList[id];
+        }
         public String getMiddleListTostring(){
             String data = "";
             for(int i=0;i<middleList.length;i++)
