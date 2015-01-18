@@ -2,9 +2,10 @@
 <resources>
 
     <string name="app_name">KOLAS</string>
-    <string name="title_section1">ExamActivity</string>
-    <string name="title_section2">CorrectionActivity</string>
-    <string name="title_section3">MaterialActivity</string>
+    <string name="title_section1">검사기관 검색</string>
+    <string name="title_section2">교정기관 검색</string>
+    <string name="title_section3">시험기관 검색</string>
+    <string name="title_section4">표준물질 검색</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>

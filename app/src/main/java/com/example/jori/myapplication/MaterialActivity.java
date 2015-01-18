@@ -1,6 +1,8 @@
 package com.example.jori.myapplication;
 
 import android.content.Intent;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -8,12 +10,23 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 
-public class MaterialActivity extends ActionBarActivity {
+public class MaterialActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+
+    private NavigationDrawerFragment mNavigationDrawerFragment;
+    private CharSequence mTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_material);
+
+        mNavigationDrawerFragment = (NavigationDrawerFragment)
+                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer_material);
+        mTitle = getTitle();
+
+        mNavigationDrawerFragment.setUp(
+                R.id.navigation_drawer_material,
+                (DrawerLayout) findViewById(R.id.drawer_layout_material));
 
         Intent intent = getIntent();
         String intent_name = intent.getStringExtra("intent_name");
@@ -21,7 +34,6 @@ public class MaterialActivity extends ActionBarActivity {
         tv.setText(intent_name);
 
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -44,4 +56,36 @@ public class MaterialActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onNavigationDrawerItemSelected(int position) {
+        // update the main content by replacing fragments
+        if(position==0) {
+            Intent i = new Intent(this,CheckActivity.class);
+            Bundle b= new Bundle();
+            b.putInt("position",position);
+
+            i.putExtras(b);
+            startActivity(i);
+
+        }
+        else if(position ==1){
+            Intent i = new Intent(this,CorrectionActivity.class);
+            Bundle b= new Bundle();
+            b.putInt("position",position);
+
+            i.putExtras(b);
+            startActivity(i);
+
+        }
+        else if(position ==2){
+            Intent i = new Intent(this,ExamActivity.class);
+            Bundle b= new Bundle();
+            b.putInt("position",position);
+
+            i.putExtras(b);
+            startActivity(i);
+        }
+    }
+
 }

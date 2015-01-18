@@ -93,7 +93,7 @@ public class MainActivity extends ActionBarActivity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         if(position==0) {
-            Intent i = new Intent(this,ExamActivity.class);
+            Intent i = new Intent(this,CheckActivity.class);
             Bundle b= new Bundle();
             b.putInt("position",position);
 
@@ -111,12 +111,21 @@ public class MainActivity extends ActionBarActivity
 
         }
         else if(position ==2){
+            Intent i = new Intent(this,ExamActivity.class);
+            Bundle b= new Bundle();
+            b.putInt("position",position);
+
+            i.putExtras(b);
+            startActivity(i);
+        }
+        else{
             Intent i = new Intent(this,MaterialActivity.class);
             Bundle b= new Bundle();
             b.putInt("position",position);
 
             i.putExtras(b);
             startActivity(i);
+
         }
     }
 
@@ -131,6 +140,8 @@ public class MainActivity extends ActionBarActivity
             case 3:
                 mTitle = getString(R.string.title_section3);
                 break;
+            case 4:
+                mTitle = getString(R.string.title_section4);
         }
     }
 
