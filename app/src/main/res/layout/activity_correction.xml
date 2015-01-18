@@ -5,7 +5,7 @@
 
     <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/material_text" />
+        android:id="@+id/tvCorrect" />
     <fragment android:id="@+id/navigation_drawer_correction"
         android:layout_width="@dimen/navigation_drawer_width" android:layout_height="match_parent"
         android:layout_gravity="start"

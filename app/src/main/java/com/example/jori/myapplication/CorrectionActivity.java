@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -43,7 +44,7 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
 
         Intent intent = getIntent();
         String intent_name = intent.getStringExtra("intent_name");
-      // tvCorrect = (TextView)findViewById(R.id.tvCorrect);
+        tvCorrect = (TextView)findViewById(R.id.tvCorrect);
         //tv.setText(intent_name);
         new JsonLoadingTask().execute();
     }
@@ -165,10 +166,18 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
                 result += "인정분야 : " + correctList[i].getBigId() + "\n";
                 result += "세부분야 : " + correctList[i].getMiddleList() + "\n\n";
             }
-        //    tvCorrect.setText(result);
+            tvCorrect.setText(result);
         }
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ( keyCode == KeyEvent.KEYCODE_MENU ) {
+            // do nothing
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
 
     @Override

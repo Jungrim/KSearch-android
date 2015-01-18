@@ -11,6 +11,7 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -89,6 +90,7 @@ public class MainActivity extends ActionBarActivity
 
     }
 
+
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
@@ -164,7 +166,18 @@ public class MainActivity extends ActionBarActivity
             return true;
         }
         return super.onCreateOptionsMenu(menu);
+
     }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ( keyCode == KeyEvent.KEYCODE_MENU ) {
+            // do nothing
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

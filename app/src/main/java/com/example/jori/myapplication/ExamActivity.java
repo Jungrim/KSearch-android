@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -57,6 +58,14 @@ public class ExamActivity extends ActionBarActivity implements NavigationDrawerF
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ( keyCode == KeyEvent.KEYCODE_MENU ) {
+            // do nothing
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
