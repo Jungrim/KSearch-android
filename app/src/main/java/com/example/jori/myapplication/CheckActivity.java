@@ -89,7 +89,7 @@ public class CheckActivity extends ActionBarActivity {
             e.printStackTrace();
         }
     }
-
+//이거 됨?
     public String getDataFromUrl(String url) throws IOException {
         // HttpURLConnection을 사용해서 주어진 URL에 대한 입력 스트림을 얻는다.
         //얻어진 입력스트림을 한줄씩 읽어서 page에 저장하고 return한다.
