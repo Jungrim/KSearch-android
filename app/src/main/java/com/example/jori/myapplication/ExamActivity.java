@@ -97,13 +97,19 @@ public class ExamActivity extends ActionBarActivity implements NavigationDrawerF
             i.putExtras(b);
             startActivity(i);
         }
-        else{
+        else if(position ==3){
             Intent i = new Intent(this,MaterialActivity.class);
-            Bundle b = new Bundle();
+            Bundle b= new Bundle();
             b.putInt("position",position);
+
             i.putExtras(b);
             startActivity(i);
 
+        }else{
+            Intent i = new Intent(this,OftenActivity.class);
+            Bundle b = new Bundle();
+            i.putExtras(b);
+            startActivity(i);
         }
     }
 }
