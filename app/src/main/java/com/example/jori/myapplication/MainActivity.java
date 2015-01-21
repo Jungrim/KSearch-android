@@ -120,7 +120,7 @@ public class MainActivity extends ActionBarActivity
             i.putExtras(b);
             startActivity(i);
         }
-        else{
+        else if(position ==3){
             Intent i = new Intent(this,MaterialActivity.class);
             Bundle b= new Bundle();
             b.putInt("position",position);
@@ -128,6 +128,12 @@ public class MainActivity extends ActionBarActivity
             i.putExtras(b);
             startActivity(i);
 
+        }else{
+            Intent i = new Intent(this,OftenActivity.class);
+            Bundle b = new Bundle();
+            b.putInt("position",position);
+            i.putExtras(b);
+            startActivity(i);
         }
     }
 
@@ -144,6 +150,11 @@ public class MainActivity extends ActionBarActivity
                 break;
             case 4:
                 mTitle = getString(R.string.title_section4);
+                break;
+            case 5:
+                mTitle = "즐겨찾기 목록";
+
+
         }
     }
 
