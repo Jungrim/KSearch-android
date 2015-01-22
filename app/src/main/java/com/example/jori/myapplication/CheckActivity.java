@@ -9,6 +9,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.StringTokenizer;
+import java.util.Vector;
+
+import android.app.ProgressDialog;
 import android.view.KeyEvent;
 
 import org.apache.http.HttpResponse;
@@ -50,7 +53,8 @@ public class CheckActivity extends ActionBarActivity {
     String selectBigname;
     String selectMiddlename;
     ListView resultView;
-    resultData[] results;
+    Vector<resultData> results;
+//    resultData[] results;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +70,7 @@ public class CheckActivity extends ActionBarActivity {
 
     public class searchButtonListener implements View.OnClickListener {
         public void onClick(View v){
-            Toast.makeText(getApplicationContext(), selectBigname+selectMiddlename, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), selectBigname+selectMiddlename, Toast.LENGTH_SHORT).show();
             new ResultTask().execute();
         }
     }
@@ -88,20 +92,49 @@ public class CheckActivity extends ActionBarActivity {
     }
 
     private class ResultTask extends AsyncTask<Void, Void, Void>{
+        ArrayAdapter resultAdapter;
+        private ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(CheckActivity.this);
+  //          dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            dialog.setMessage("Loading");
+            dialog.show();
+
+            super.onPreExecute();
+        }
+
         protected Void doInBackground(Void... voids){
             makeSearchQuery();
+            resultAdapter = new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_list_item_1);
             return null;
         }
         protected void onPostExecute(Void id) {
-            ArrayAdapter resultAdapter = new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_list_item_1);
-            resultView.setAdapter(resultAdapter);
-            for(int i=0;i<results.length;i++){
-                resultAdapter.add(results[i].getData());
+            dialog.dismiss();
+            for(int i=0;i<results.size();i++){
+                resultAdapter.add(results.get(i).getData());
             }
+            resultView.setAdapter(resultAdapter);
+//            for(int i=0;i<results.length;i++){
+//                resultAdapter.add(results[i].getData());
+//            }
         }
     }
 
     private class MiddleAdapterTask extends AsyncTask<Integer, Void, Integer>{
+        private ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(CheckActivity.this);
+            //          dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            dialog.setMessage("Loading");
+            dialog.show();
+
+            super.onPreExecute();
+        }
+
         protected Integer doInBackground(Integer... ids){
             dataList[ids[0]].setMiddleList();
             return ids[0];
@@ -111,11 +144,23 @@ public class CheckActivity extends ActionBarActivity {
             middleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
             middleSpinner.setAdapter(middleAdapter);
             middleSpinner.setOnItemSelectedListener(new MiddleAdapterListener(id));
+            dialog.dismiss();
         }
     }
 
     private class BigAdapterTask extends AsyncTask<String, Void, String> {
         ArrayAdapter bigAdapter;
+        private ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(CheckActivity.this);
+            //          dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            dialog.setMessage("Loading");
+            dialog.show();
+
+            super.onPreExecute();
+        }
         @Override
         protected String doInBackground(String... str) {
             makeDataList();
@@ -128,6 +173,7 @@ public class CheckActivity extends ActionBarActivity {
         protected void onPostExecute(String result) {
             //makeDataList에서 만들어진 bigList를 apdater를 통해 spinner에 입력
             bigSpinner.setAdapter(bigAdapter);
+            dialog.dismiss();
             bigSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
@@ -216,7 +262,7 @@ public class CheckActivity extends ActionBarActivity {
         }
 
         public void setMiddleList() {
-            String inserviceUrl = "http://www.ibtk.kr/inspectionAgencyDetail_api/";
+            String inserviceUrl = "http://ibtk.kr/inspectionAgencyDetail_api/";
             String inserviceKey = "3f7f0c56c14ad73f3a0534ba2999f4a2?";
             String query = "model_query_pageable.enable=true&model_query_distinct=middlename&model_query={\"bigid\":\"0" + this.bigId + "\"}";
             String instrUrl = inserviceUrl + inserviceKey + query;
@@ -295,7 +341,7 @@ public class CheckActivity extends ActionBarActivity {
 
     public void makeDataList() {
         //API URL로 부터 bigname을 가져와서 bigList에 입력
-        String serviceUrl = "http://api.ibtk.kr/inspectionRecognize_api/";
+        String serviceUrl = "http://ibtk.kr/inspectionRecognize_api/";
         String serviceKey = "48744e4796989e49eef86081ab416116?";
         String query = "model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"bigname\",direction:1}]}&model_query_distinct=bigid";
         String strUrl = serviceUrl + serviceKey + query;
@@ -312,6 +358,7 @@ public class CheckActivity extends ActionBarActivity {
                 String bigName = json.getString("bigname");
                 int bigId = Integer.parseInt(json.getString("bigid"));
                 bigList[i] = new String(bigName);
+                System.out.println(bigList[i]);
                 dataList[i] = new BigMiddleConnect(bigName,bigId);
             }
         } catch (Exception e) {
@@ -327,6 +374,7 @@ public class CheckActivity extends ActionBarActivity {
         try {
             URL u = new URL(url);
             conn = (HttpURLConnection)u.openConnection();
+            conn.setDoOutput(false);
             BufferedInputStream buf = new BufferedInputStream(conn.getInputStream());
             BufferedReader bufreader = new BufferedReader(new InputStreamReader(buf,"utf-8"));
 
@@ -339,6 +387,43 @@ public class CheckActivity extends ActionBarActivity {
             return page;
         } finally{
             conn.disconnect();
+        }
+    }
+
+    public void makeSearchQuery(){
+        String searchUrl = "http://ibtk.kr/inspectionAgencyDetail_api/";
+        String searchUrlKey = "3f7f0c56c14ad73f3a0534ba2999f4a2?";
+        String searchquery = "model_query_pageable={enable:true,pageSize:1000}&model_query_distinct=companyno";//&model_query={\"bigname\":\"" + selectBigname + "\"},{\"middlename\":\"" + selectMiddlename + "\"}]}";
+        String instrUrl = searchUrl + searchUrlKey + searchquery;
+        results = new Vector<resultData>();
+
+        try {
+            String inline = getDataFromUrl(instrUrl);
+            System.out.println("line : "+inline);
+            JSONObject injson = new JSONObject(inline);
+            JSONArray injArr = injson.getJSONArray("content");
+//            results = new resultData[injArr.length()];
+            for (int j = 0; j < injArr.length(); j++) {
+                injson = injArr.getJSONObject(j);
+                if(!(selectBigname.equals(injson.getString("bigname")))||!(selectMiddlename.equals(injson.getString("middlename")))) {
+                    continue;
+                }
+                else{
+                    String companyName = injson.getString("company");
+                    //System.out.println(middleName);
+                    String addr = injson.getString("corporateaddr");
+                    String range = injson.getString("rangepower");
+                    System.out.println(companyName + addr + range);
+                    results.addElement(new resultData(companyName, addr, range));
+                    System.out.println(results.size());
+
+                }
+
+            }
+        } catch (Exception e){
+            System.out.println("makeQuery" + e.toString());
+            return;
+            //return "middleList" + e.toString();
         }
     }
 
@@ -363,33 +448,7 @@ public class CheckActivity extends ActionBarActivity {
         return true;
     }
 
-    public void makeSearchQuery(){
-        String searchUrl = "http://www.ibtk.kr/inspectionAgencyDetail_api/";
-        String searchUrlKey = "3f7f0c56c14ad73f3a0534ba2999f4a2?";
-        String searchquery = "model_query_pageable.enable=true&model_query_distinct=companyno&model_query={\"bigname\":\"" + selectBigname + "\",\"middlename\":\"" + selectMiddlename + "\"}";
-        String instrUrl = searchUrl + searchUrlKey + searchquery;
-        try {
-            String inline = getDataFromUrl(instrUrl);
-            System.out.println("line : "+inline);
-            JSONObject injson = new JSONObject(inline);
-            JSONArray injArr = injson.getJSONArray("content");
-            results = new resultData[injArr.length()];
 
-            for (int j = 0; j < injArr.length(); j++) {
-                injson = injArr.getJSONObject(j);
-                String companyName = injson.getString("company");
-                //System.out.println(middleName);
-                String addr = injson.getString("corporateaddr");
-                String range = injson.getString("rangepower");
-                results[j] = new resultData(companyName,addr,range);
-                System.out.println(results[j].getCompanyName()+results[j].getAddr());
-            }
-        } catch (Exception e){
-            System.out.println("makeQuery" + e.toString());
-            return;
-            //return "middleList" + e.toString();
-        }
-    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
