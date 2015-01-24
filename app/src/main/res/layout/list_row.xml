@@ -4,6 +4,6 @@
         <TextView android:id="@+id/tv_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentLeft="true" android:layout_centerVertical="true" android:text="ListView 입니다." />
         <Button android:id="@+id/btn_button" android:layout_width="50dip" android:layout_height="50dip" android:layout_alignParentRight="true" android:focusable="false" />
         <ImageView android:id="@+id/iv_image" android:layout_width="50dip" android:layout_height="50dip" android:layout_toLeftOf="@+id/btn_button" android:background="@drawable/ic_launcher" />
-        <CheckBox android:id="@+id/cb_box" android:layout_width="50dip" android:layout_height="50dip" android:layout_toLeftOf="@+id/iv_image" android:focusable="false" />
+        <CheckBox android:id="@+id/cb_box" android:layout_width="50dip" android:layout_height="50dip" android:layout_toLeftOf="@+id/iv_image" android:focusable="false" android:button="@android:drawable/btn_star" />
     </RelativeLayout>
 </RelativeLayout>

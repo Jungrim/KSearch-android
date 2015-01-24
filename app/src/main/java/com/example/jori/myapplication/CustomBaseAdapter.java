@@ -11,6 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,20 +52,22 @@ public class CustomBaseAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertview, ViewGroup parent) {
 
-        View v = convertview;
+       // View v = convertview;
+        ViewHolder viewHolder;
 
-        if(v == null){
+        if(convertview == null){
+            convertview = inflater.inflate(R.layout.list_row,null);
             viewHolder = new ViewHolder();
-            v = inflater.inflate(R.layout.list_row, null);
-            viewHolder.tv_title = (TextView)v.findViewById(R.id.tv_title);
-            viewHolder.iv_image = (ImageView)v.findViewById(R.id.iv_image);
-            viewHolder.btn_button = (Button)v.findViewById(R.id.btn_button);
-            viewHolder.cb_box = (CheckBox)v.findViewById(R.id.cb_box);
 
-            v.setTag(viewHolder);
+            viewHolder.tv_title = (TextView)convertview.findViewById(R.id.tv_title);
+//            viewHolder.iv_image = (ImageView)convertview.findViewById(R.id.iv_image);
+//            viewHolder.btn_button = (Button)convertview.findViewById(R.id.btn_button);
+            viewHolder.cb_box = (CheckBox)convertview.findViewById(R.id.cb_box);
+
+            convertview.setTag(viewHolder);
 
         }else {
-            viewHolder = (ViewHolder)v.getTag();
+            viewHolder = (ViewHolder)convertview.getTag();
         }
 
         viewHolder.tv_title.setTextColor(Color.BLACK);
@@ -77,17 +80,19 @@ public class CustomBaseAdapter extends BaseAdapter {
         // image 나 button 등에 Tag를 사용해서 position 을 부여해 준다.
         // Tag란 View를 식별할 수 있게 바코드 처럼 Tag를 달아 주는 View의 기능
         // 이라고 생각 하시면 됩니다.
-        viewHolder.iv_image.setTag(position);
-        viewHolder.iv_image.setOnClickListener(buttonClickListener);
-
-        viewHolder.btn_button.setTag(position);
-        viewHolder.btn_button.setText(getItem(position).button);
-        viewHolder.btn_button.setOnClickListener(buttonClickListener);
+//        viewHolder.iv_image.setTag(position);
+//        viewHolder.iv_image.setOnClickListener(buttonClickListener);
+//
+//        viewHolder.btn_button.setTag(position);
+//        viewHolder.btn_button.setText(getItem(position).button);
+//        viewHolder.btn_button.setOnClickListener(buttonClickListener);
 
         viewHolder.cb_box.setTag(position);
+        viewHolder.cb_box.setChecked(false);
+        viewHolder.cb_box.setChecked(((ListView)parent).isItemChecked(position));
         viewHolder.cb_box.setOnClickListener(buttonClickListener);
 
-        return v;
+        return convertview;
     }
 
     // Adapter가 관리하는 Data List를 교체 한다.
@@ -105,27 +110,29 @@ public class CustomBaseAdapter extends BaseAdapter {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-
-                // 이미지 클릭
-                case R.id.iv_image:
-                    Toast.makeText(
-                            mContext,
-                            "이미지 Tag = " + v.getTag(),
-                            Toast.LENGTH_SHORT
-                    ).show();
-                    break;
-
-                // 버튼 클릭
-                case R.id.btn_button:
-                    Toast.makeText(
-                            mContext,
-                            "버튼 Tag = " + v.getTag(),
-                            Toast.LENGTH_SHORT
-                    ).show();
-                    break;
+//
+//                // 이미지 클릭
+//                case R.id.iv_image:
+//                    Toast.makeText(
+//                            mContext,
+//                            "이미지 Tag = " + v.getTag(),
+//                            Toast.LENGTH_SHORT
+//                    ).show();
+//                    break;
+//
+//                // 버튼 클릭
+//                case R.id.btn_button:
+//                    Toast.makeText(
+//                            mContext,
+//                            "버튼 Tag = " + v.getTag(),
+//                            Toast.LENGTH_SHORT
+//                    ).show();
+//                    break;
 
                 // CheckBox
                 case R.id.cb_box:
+                    System.out.println(v.getTag());
+
                     Toast.makeText(
                             mContext,
                             "체크박스 Tag = " + v.getTag(),
@@ -144,11 +151,11 @@ public class CustomBaseAdapter extends BaseAdapter {
      * getView의 속도 향상을 위해 쓴다.
      * 한번의 findViewByID 로 재사용 하기 위해 viewHolder를 사용 한다.
      */
-    class ViewHolder{
-        public TextView tv_title = null;
-        public ImageView iv_image = null;
-        public Button btn_button = null;
-        public CheckBox cb_box = null;
+    public class ViewHolder{
+        public TextView tv_title;
+//        public ImageView iv_image;
+//        public Button btn_button;
+        public CheckBox cb_box;
 
     }
 
