@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -48,10 +49,10 @@ public class CheckActivity extends ActionBarActivity {
     private BigMiddleConnect[] dataList;
     private String selectBigid;
     private String selectMiddleid;
+//    private String inputCompanyName;
     private ListView resultView;
     private ArrayList<ResultData> results;
-//    resultData[] results;
-
+//    private EditText userInput;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +61,7 @@ public class CheckActivity extends ActionBarActivity {
         middleSpinner = (Spinner)findViewById(R.id.middle_spinner);
         searchButton = (Button)findViewById(R.id.search_button);
         searchButton.setOnClickListener(new searchButtonListener());
+//        userInput = (EditText)findViewById(R.id.company_name);
         new BigAdapterTask().execute();
         resultView = (ListView) findViewById(R.id.result_view);
     }
@@ -67,6 +69,8 @@ public class CheckActivity extends ActionBarActivity {
     public class searchButtonListener implements View.OnClickListener {
         public void onClick(View v){
             //Toast.makeText(getApplicationContext(), selectBigname+selectMiddlename, Toast.LENGTH_SHORT).show();
+//            inputCompanyName = new String(userInput.getText().toString());
+//            System.out.println(inputCompanyName);
             new ResultTask().execute();
         }
     }
@@ -145,6 +149,7 @@ public class CheckActivity extends ActionBarActivity {
 
         protected Integer doInBackground(Integer... ids){
             //입력받은 대분류Id(bigid)를 통해서 해당되는 세부분야(middlename)를 불러옴
+
             dataList[ids[0]].setMiddleList();
             return ids[0];
         }
@@ -284,7 +289,13 @@ public class CheckActivity extends ActionBarActivity {
             String inserviceKey = "3f7f0c56c14ad73f3a0534ba2999f4a2?";
             String query = "model_query_pageable.enable=true&model_query_distinct=middlename&model_query={\"bigid\":\"" + this.bigId + "\"}";
             String instrUrl = inserviceUrl + inserviceKey + query;
-
+            if(this.bigname.equals("인정분야")){
+                middleList = new String[1];
+                middleidList = new String[1];
+                middleidList[0] = new String("-1");
+                middleList[0] = new String("세부분야");
+                return;
+            }
             try {
                 String inline = getDataFromUrl(instrUrl);
                 JSONObject injson = new JSONObject(inline);
@@ -305,9 +316,11 @@ public class CheckActivity extends ActionBarActivity {
                 //해당 부분을 삭제하기 위해 StringTokenizer를 사용한다.
                 StringTokenizer middleNameSt = new StringTokenizer(middleStr,",");
                 StringTokenizer middleIdSt = new StringTokenizer(middleidStr,",");
-                middleList = new String[middleNameSt.countTokens()];
-                middleidList = new String[middleIdSt.countTokens()];
-                int i = 0;
+                middleList = new String[middleNameSt.countTokens()+1];
+                middleList[0] = new String("세부분야");
+                middleidList = new String[middleIdSt.countTokens()+1];
+                middleidList[0] = new String("-1");
+                int i = 1;
                 while(middleNameSt.hasMoreTokens()){
                     String tmpName = middleNameSt.nextToken();
                     String tmpId = middleIdSt.nextToken();
@@ -367,16 +380,18 @@ public class CheckActivity extends ActionBarActivity {
             String line = getDataFromUrl(strUrl);
             JSONObject json = new JSONObject(line);
             JSONArray jArr = json.getJSONArray("content");
-            bigList = new String[jArr.length()];
-            dataList = new BigMiddleConnect[jArr.length()];
-            for (int i = 0; i < jArr.length(); i++) {
+            bigList = new String[jArr.length()+1];
+            bigList[0] = new String("인정분야");
+            dataList = new BigMiddleConnect[jArr.length()+1];
+            dataList[0] = new BigMiddleConnect("인정분야","-1");
+            for (int i = 0; i < jArr.length()+1; i++) {
                 //JSONArray jARR로 부터 bigname과 bigid에 해당하는 data를 읽어옴
                 json = jArr.getJSONObject(i);
                 String bigName = json.getString("bigname");
                 String bigId = json.getString("bigid");
-                bigList[i] = new String(bigName);
-                System.out.println(bigList[i]);
-                dataList[i] = new BigMiddleConnect(bigName,bigId);
+                bigList[i+1] = new String(bigName);
+                System.out.println(bigList[i+1]);
+                dataList[i+1] = new BigMiddleConnect(bigName,bigId);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -412,7 +427,43 @@ public class CheckActivity extends ActionBarActivity {
         //API로 부터 해당하는 기관을 찾아준다.
         String searchUrl = "http://ibtk.kr/inspectionAgencyDetail_api/";
         String searchUrlKey = "3f7f0c56c14ad73f3a0534ba2999f4a2?";
-        String searchquery = "model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno";
+        String searchquery;// = "model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno";
+
+//        if(inputCompanyName.length() == 0) {
+            //기관명 검색어 입력이 없을 때
+            if (selectBigid.equals("-1")){
+                //인정분야에 대한 선택이 없을 때 -> 모든 기관들 데이터
+                System.out.println("1");
+                searchquery = new String("model_query_pageable={enable:true,pageSize:1000,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+            }
+
+            else if ((!selectBigid.equals("-1"))&&selectMiddleid.equals("-1")) {
+                //인정분야 선택 있고 세부분야 선택 없을 때
+                System.out.println("2");
+                searchquery = new String("model_query={\"bigid\":\"" + selectBigid + "\"}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+            } else {
+                //세부분야의 선택이 있을 때
+                searchquery = new String("model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+            }
+//        }
+//        else{
+//            //기관명 검색어 입력이 있을 때
+//            if (selectBigid.equals("-1")){
+//                //인정분야에 대한 선택이 없을 때 -> 모든 기관들 데이터
+//                System.out.println("3");
+//                searchquery = new String("model_query={\"company\":{\"$regex\":\""+ inputCompanyName + "\"}}&model_query_pageable={enable:true,pageSize:1000,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+//            }
+//            else if ((!selectBigid.equals("-1"))&&selectMiddleid.equals("-1")) {
+//                //인정분야 선택 있고 세부분야 선택 없을 때
+//                System.out.println("4");
+//                searchquery = new String("model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"company\":{\"$regex\":\""+ inputCompanyName + "\"}}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+//            } else {
+//                //세부분야의 선택이 있을 때
+//                System.out.println("5");
+//                searchquery = new String("model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"},{\"company\":{\"$regex\":\""+ inputCompanyName + "\"}}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+//            }
+//        }
+
         String instrUrl = searchUrl + searchUrlKey + searchquery;
         results = new ArrayList<ResultData>();
 

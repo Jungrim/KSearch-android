@@ -9,26 +9,38 @@
 
 
     <Spinner
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="50dp"
         android:id="@+id/big_spinner"
         android:layout_alignParentTop="false" />
 
     <Spinner
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="50dp"
         android:id="@+id/middle_spinner"
-        android:layout_below="@+id/big_spinner" />
-
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/big_spinner"
+        android:layout_toEndOf="@+id/big_spinner" />
+<!--
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/company_name"
+        android:text="기관명 입력"
+        android:layout_below="@+id/big_spinner"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/search_button"
+        android:layout_toStartOf="@+id/search_button" />
+-->
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="검색"
         android:id="@+id/search_button"
         android:layout_below="@+id/middle_spinner"
-        android:layout_alignParentLeft="false"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true" />
+        android:layout_alignRight="@+id/middle_spinner"
+        android:layout_alignEnd="@+id/middle_spinner" />
 
     <ListView
         android:layout_width="wrap_content"
@@ -37,5 +49,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/search_button" />
+
 
 </RelativeLayout>

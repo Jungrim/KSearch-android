@@ -2,6 +2,8 @@ package com.example.jori.myapplication;
 
 
 import android.content.Context;
+import android.graphics.Color;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,6 +67,11 @@ public class CustomBaseAdapter extends BaseAdapter {
             viewHolder = (ViewHolder)v.getTag();
         }
 
+        viewHolder.tv_title.setTextColor(Color.BLACK);
+//        viewHolder.tv_title.setTextSize(12);
+        viewHolder.tv_title.setLines(3);
+//        viewHolder.tv_title.setWidth(500);
+        viewHolder.tv_title.setEllipsize(TextUtils.TruncateAt.MARQUEE);
         viewHolder.tv_title.setText(getItem(position).title);
 
         // image 나 button 등에 Tag를 사용해서 position 을 부여해 준다.
