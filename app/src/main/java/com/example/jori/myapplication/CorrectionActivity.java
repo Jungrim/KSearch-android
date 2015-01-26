@@ -45,13 +45,19 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
             "직류,저항,용량 및 인덕턴스,교류 및 교류전력,기타 직류 및 저주파측정,전자기장,RF 측정,전자기장의 세기 및 안테나","접촉시 온도,비접촉시 온도,습도,수분",
             "음량,수중 음향,진동","광도,광원 및 검출기,매질특성,광통신","방사선,방사능,중성자","화학분석,메디칼 기준 측정 실험실"};
     private String[] bigList;
+    private SmallData[] smallList;
     private Spinner bigSpinner;
     private Spinner middleSpinner;
+    private Spinner smallSpinner;
     private Button searchButton;
     private BigMiddleConnect[] dataList;
-    private MiddleSmallConnect[] midSmallList;
+
     private String selectBigid;
     private String selectMiddleid;
+    private String selectSmall;
+    private String selectCity;
+
+    private Spinner citySpinner;
     //    private String inputCompanyName;
     private ListView resultView;
     private ArrayList<ResultData> results;
@@ -71,6 +77,9 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
 
         bigSpinner = (Spinner)findViewById(R.id.big_spinner);
         middleSpinner = (Spinner)findViewById(R.id.middle_spinner);
+        smallSpinner = (Spinner)findViewById(R.id.small_spinner);
+        citySpinner = (Spinner)findViewById(R.id.city_spinner);
+        citySpinner.setOnItemSelectedListener(new CityItemSelected());
         searchButton = (Button)findViewById(R.id.search_button);
         searchButton.setOnClickListener(new searchButtonListener());
 //        userInput = (EditText)findViewById(R.id.company_name);
@@ -87,6 +96,35 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
         }
     }
 
+    private class CityItemSelected implements AdapterView.OnItemSelectedListener{
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
+            String select = (String)citySpinner.getSelectedItem();
+
+            if(select.equals("시도별"))
+                selectCity = new String("");
+            else
+                selectCity = new String(select);
+
+            System.out.println(selectCity + selectCity.length());
+        }
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+
+    }
+    public class SmallAdapterListener implements  AdapterView.OnItemSelectedListener{
+
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long Id){
+            selectSmall = new String(smallList[position].getSmallName());
+//            System.out.println(selectSmall);
+        }
+
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    }
     public class MiddleAdapterListener implements AdapterView.OnItemSelectedListener{
         int id;
 
@@ -97,6 +135,7 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
         public void onItemSelected(AdapterView<?> parent, View view, int position, long Id){
             selectMiddleid = new String(dataList[this.id].getMiddleId(position));
 
+            new SmallAdapterTask().execute();
         }
 
         public void onNothingSelected(AdapterView<?> parent) {
@@ -144,8 +183,9 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
 
         }
     }
-    private class SmallAdapterTask extends AsyncTask<Integer, Void, Integer>{
+    private class SmallAdapterTask extends AsyncTask<Void, Void, Void>{
         private ProgressDialog dialog;
+        private String[] smallNameList;
         @Override
         protected void onPreExecute() {
             //쿼리를 만들어서 데이터를 불러오기전에 실행되는 부분
@@ -158,18 +198,26 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
             super.onPreExecute();
         }
 
-        protected Integer doInBackground(Integer... ids){
+        protected Void doInBackground(Void... ids){
             //입력받은 대분류Id(bigid)를 통해서 해당되는 세부분야(middlename)를 불러옴
 //            midSmallList[ids[0]].setSmallList();
-            return ids[0];
+            makeSmallList();
+            return null;
         }
-        protected void onPostExecute(Integer id){
+        protected void onPostExecute(Void id){
             //불러와진 데이터를 통해 어레이어댑터를 만들고
             //미들스피너에 붙이고 로딩창 종료
-            ArrayAdapter middleAdapter = new myAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, dataList[id].getMiddleList());
-            middleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
-            middleSpinner.setAdapter(middleAdapter);
-            middleSpinner.setOnItemSelectedListener(new MiddleAdapterListener(id));
+            smallNameList = new String[smallList.length];
+            System.out.println(smallList.length);
+            int i = 0;
+            for(SmallData tmpData : smallList){
+                smallNameList[i++] = new String(tmpData.getSmallName());
+                System.out.println(smallNameList[i-1]);
+            }
+            ArrayAdapter smallAdapter = new myAdapter(getApplicationContext(), android.R.layout.simple_spinner_item,smallNameList );
+            smallAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+            smallSpinner.setAdapter(smallAdapter);
+            smallSpinner.setOnItemSelectedListener(new SmallAdapterListener());
             dialog.dismiss();
         }
     }
@@ -190,7 +238,6 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
 
         protected Integer doInBackground(Integer... ids){
             //입력받은 대분류Id(bigid)를 통해서 해당되는 세부분야(middlename)를 불러옴
-
             dataList[ids[0]].setMiddleList();
             return ids[0];
         }
@@ -299,73 +346,14 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
             tv.setText(items[position]);
             tv.setText(items[position]);
             tv.setTextColor(Color.BLACK);
-            tv.setTextSize(12);
+//            tv.setTextSize(12);
             tv.setHeight(50);
 
-            tv.setTextSize(12);
+//            tv.setTextSize(12);
             return convertView;
         }
     }
-    private class MiddleSmallConnect{
-        //중분류와 그에 해당하는 소분류들을 갖고 있으며 get메소드들과 set메소드들 통해
-        //중분류에 해당하는 소분류들을 만들고 원하는 Data를 리턴해준다.
-        private String middleId;
-        private String middlename;
-        private String[] smallList;
-        private String[] smallidList;
 
-        public MiddleSmallConnect(String middlename,String middleId){
-            this.middleId = middleId;
-            this.middlename = middlename;
-        }
-        public void setSmallList(String bigId) {
-            //현재 객체의 bigId를 통해서 현재 객체의 대분류에 해당하는 세부분야의 쿼리문을 작성하고
-            //스트링 리스트로 저장
-            String inserviceUrl = "http://ibtk.kr/correctionalClassification_api/";
-            String inserviceKey = "476febb189d2992a63feba63ba5691cb?";
-            String query = "model_query_pageable={enable:true,sortOrders:[{property:\"smallid\",direction:1}]}&model_query_distinct=smallid&model_query={$and:[{\"bigid\":\""+bigId+"\"},{\"middleid\":\""+this.middleId+"\"}]}";
-            String instrUrl = inserviceUrl + inserviceKey + query;
-            if(this.middlename.equals("중분류")){
-                smallList = new String[1];
-                smallidList = new String[1];
-                smallidList[0] = new String("-1");
-                smallList[0] = new String("소분류");
-                return;
-            }
-
-            try {
-                String inline = getDataFromUrl(instrUrl);
-                JSONObject injson = new JSONObject(inline);
-                JSONArray injArr = injson.getJSONArray("content");
-//                middleList = new String[injArr.length()];
-                smallidList = new String[injArr.length()+1];
-                smallList = new String[injArr.length()+1];
-                smallList[0] = new String("소분류");
-                smallidList[0] = new String("-1");
-                for (int j = 0; j < injArr.length(); j++) {
-                    injson = injArr.getJSONObject(j);
-                    String smallId = injson.getString("smallid");
-                    String smallName = injson.getString("smallname");
-                    //System.out.println(middleName);
-                    smallidList[j+1] = smallId;
-                    smallList[j+1] = smallName;
-                }
-            } catch (Exception e){
-                return;
-            }
-        }
-
-        public String getBigname(){
-            return middlename;
-        }
-        public String getMiddleId(int id) { return smallidList[id];}
-        public String[] getMiddleList(){
-            return smallList;
-        }
-        public String getBigId(){
-            return middleId;
-        }
-    }
     private class BigMiddleConnect{
         //대분류와 그에 해당하는 세부분야들을 갖고 있으며 get메소드들과 set메소드를 통해
         //대분류에 해당하는 세부분야를 만들고, 원하는 Data를 리턴해준다.
@@ -406,8 +394,6 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
 //                middleList = new String[injArr.length()];
                 middleidList = new String[injArr.length()+1];
                 middleList = new String[injArr.length()+1];
-                midSmallList = new MiddleSmallConnect[injArr.length()+1];
-                midSmallList[0] = new MiddleSmallConnect("중분류","-1");
                 middleList[0] = new String("중분류");
                 middleidList[0] = new String("-1");
                 for (int j = 0; j < injArr.length(); j++) {
@@ -422,7 +408,6 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
                 while(middleNameSt.hasMoreTokens()){
                     String tmpName = middleNameSt.nextToken();
                     System.out.println(tmpName);
-                    midSmallList[i] = new MiddleSmallConnect(tmpName,middleidList[i]);
                     middleList[i++] = new String(tmpName);
                 }
             } catch (Exception e){
@@ -465,7 +450,55 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
             return addr;
         }
     }
+    public class SmallData{
+        String smallName;
+        String smallId;
 
+        public SmallData(String smallName,String smallId){
+            this.smallId = smallId;
+            this.smallName = smallName;
+        }
+
+        public String getSmallName(){
+            return smallName;
+        }
+
+        public String getSmallId(){
+            return smallId;
+        }
+    }
+    public void makeSmallList(){
+        //API URL로 부터 bigId와 middleId를 통해 smallList를 만든다
+        String serviceUrl = "http://ibtk.kr/correctionalClassification_api/";
+        String serviceKey = "476febb189d2992a63feba63ba5691cb?";
+        String query = "model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"smallid\",direction:1}]}&model_query_distinct=smallid&model_query={$and:[{\"bigid\":\""+selectBigid+"\"},{\"middleid\":\""+selectMiddleid+"\"}]}";
+        String strUrl = serviceUrl + serviceKey + query;
+        System.out.println(strUrl);
+
+        if(selectMiddleid.equals("-1")){
+            smallList = new SmallData[1];
+            smallList[0] = new SmallData("소분류","-1");
+            return;
+        }
+
+        try {
+            String inline = getDataFromUrl(strUrl);
+            System.out.println(inline);
+            JSONObject json = new JSONObject(inline);
+            JSONArray jArr = json.getJSONArray("content");
+            smallList = new SmallData[jArr.length()+1];
+            smallList[0] = new SmallData("소분류","-1");
+
+            for (int i = 0; i< jArr.length()+1 ; i++) {
+                json = jArr.getJSONObject(i);
+                smallList[i+1] = new SmallData(new String(json.getString("smallname")),new String(json.getString("smallid")));
+                System.out.println(smallList[i+1].getSmallName());
+            }
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+
+    }
     public void makeDataList() {
         //API URL로 부터 bigid을 가져와서 bignameList와 연결해서 bigList에 입력
         String serviceUrl = "http://ibtk.kr/correctionalClassification_api/";

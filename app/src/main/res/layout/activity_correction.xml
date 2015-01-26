@@ -26,22 +26,21 @@
             android:layout_toEndOf="@+id/big_spinner" />
 
         <Spinner
-            android:layout_width="wrap_content"
+            android:layout_width="220dp"
             android:layout_height="wrap_content"
             android:id="@+id/small_spinner"
-            android:layout_alignBottom="@+id/search_button"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_toLeftOf="@+id/search_button"
-            android:layout_toStartOf="@+id/search_button"
-            android:layout_below="@+id/big_spinner" />
+            android:layout_below="@+id/big_spinner"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="검색"
             android:id="@+id/search_button"
-            android:layout_below="@+id/middle_spinner"
+            android:layout_below="@+id/small_spinner"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_alignRight="@+id/middle_spinner"
             android:layout_alignEnd="@+id/middle_spinner" />
 
@@ -52,6 +51,17 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/search_button" />
+
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/city_spinner"
+            android:layout_below="@+id/big_spinner"
+            android:entries="@array/city"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_toLeftOf="@+id/small_spinner"
+            android:layout_toStartOf="@+id/small_spinner" />
 
     </RelativeLayout>
 
