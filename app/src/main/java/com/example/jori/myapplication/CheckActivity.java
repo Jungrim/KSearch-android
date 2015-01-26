@@ -6,9 +6,9 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import android.app.ProgressDialog;
 import android.view.KeyEvent;
@@ -50,15 +50,19 @@ public class CheckActivity extends ActionBarActivity {
     private String selectBigid;
     private String selectMiddleid;
     private String inputCompanyName;
+    private String selectCity;
     private ListView resultView;
     private ArrayList<ResultData> results;
     private EditText userInput;
+    private Spinner citySpinner;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check);
         bigSpinner = (Spinner)findViewById(R.id.big_spinner);
         middleSpinner = (Spinner)findViewById(R.id.middle_spinner);
+        citySpinner = (Spinner)findViewById(R.id.city_spinner);
+        citySpinner.setOnItemSelectedListener(new CityItemSelected());
         searchButton = (Button)findViewById(R.id.search_button);
         searchButton.setOnClickListener(new searchButtonListener());
         userInput = (EditText)findViewById(R.id.company_name);
@@ -84,6 +88,7 @@ public class CheckActivity extends ActionBarActivity {
 
         public void onItemSelected(AdapterView<?> parent, View view, int position, long Id){
             selectMiddleid = new String(dataList[this.id].getMiddleId(position));
+
         }
 
         public void onNothingSelected(AdapterView<?> parent) {
@@ -215,7 +220,24 @@ public class CheckActivity extends ActionBarActivity {
         }
 
     }
+    private class CityItemSelected implements AdapterView.OnItemSelectedListener{
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
+            String select = (String)citySpinner.getSelectedItem();
 
+            if(select.equals("시도별"))
+                selectCity = new String("");
+            else
+                selectCity = new String(select);
+
+            System.out.println(selectCity + selectCity.length());
+        }
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+
+    }
     private class myAdapter extends ArrayAdapter<String> {
         //스피너에 붙는 어레이 어댑터를 만들때 사용되는 클래스로
         //어레이어댑터를 상속하고 TextView를 통해서 폰트의 설정을 변경할 수 있다.
@@ -261,10 +283,10 @@ public class CheckActivity extends ActionBarActivity {
             tv.setText(items[position]);
             tv.setText(items[position]);
             tv.setTextColor(Color.BLACK);
-            tv.setTextSize(12);
+//            tv.setTextSize(15);
             tv.setHeight(50);
 
-            tv.setTextSize(12);
+//            tv.setTextSize(12);
             return convertView;
         }
     }
@@ -413,7 +435,7 @@ public class CheckActivity extends ActionBarActivity {
             conn = (HttpURLConnection)u.openConnection();
             conn.setDoOutput(false);
             BufferedInputStream buf = new BufferedInputStream(conn.getInputStream());
-            BufferedReader bufreader = new BufferedReader(new InputStreamReader(buf,"utf-8"));
+            BufferedReader bufreader = new BufferedReader(new InputStreamReader(buf));
 
             String line = null;
             String page = "";
@@ -432,41 +454,101 @@ public class CheckActivity extends ActionBarActivity {
         //API로 부터 해당하는 기관을 찾아준다.
         String searchUrl = "http://ibtk.kr/inspectionAgencyDetail_api/";
         String searchUrlKey = "3f7f0c56c14ad73f3a0534ba2999f4a2?";
-        String searchquery;// = "model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno";
+        String searchquery = "model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno";
 
-        if(inputCompanyName.length() == 0) {
-            //기관명 검색어 입력이 없을 때
-            if (selectBigid.equals("-1")) {
-                //인정분야에 대한 선택이 없을 때 -> 모든 기관들 데이터
-                System.out.println("1");
-                searchquery = new String("model_query_pageable={enable:true,pageSize:1000}&model_query_distinct=companyno");
-            } else if ((!selectBigid.equals("-1")) && selectMiddleid.equals("-1")) {
-                //인정분야 선택 있고 세부분야 선택 없을 때
-                System.out.println("2");
-                searchquery = new String("model_query={\"bigid\":\"" + selectBigid + "\"}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+        if(selectCity.length() == 0) {
+            //도시 선택이 없을 때
+            if (inputCompanyName.length() == 0) {
+                //기관명 검색어 입력이 없을 때
+                if (selectBigid.equals("-1")) {
+                    //인정분야에 대한 선택이 없을 때 -> 모든 기관들 데이터
+                    System.out.println("1");
+                    searchquery = new String("model_query_pageable={enable:true,pageSize:1000}&model_query_distinct=companyno");
+                } else if ((!selectBigid.equals("-1")) && selectMiddleid.equals("-1")) {
+                    //인정분야 선택 있고 세부분야 선택 없을 때
+                    System.out.println("2");
+                    searchquery = searchquery + "&model_query={\"bigid\":\"" + selectBigid + "\"}";
+//                searchquery = new String("model_query={\"bigid\":\"" + selectBigid + "\"}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+                } else {
+                    //세부분야의 선택이 있을 때
+                    searchquery = searchquery + "&model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"}]}";
+//                searchquery = new String("model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+                }
             } else {
-                //세부분야의 선택이 있을 때
-                searchquery = new String("model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+                //기관명 검색어 입력이 있을 때
+                try {
+                    inputCompanyName = URLEncoder.encode(inputCompanyName, "UTF-8");
+                } catch (Exception e) {
+                    System.out.println(e.toString());
+                }
+                if (selectBigid.equals("-1")) {
+                    //인정분야에 대한 선택이 없을 때 -> 모든 기관들 데이터
+                    System.out.println("3");//&model_query_pageable={enable:true,pageSize:1000,sortOrders:[{property:"accreditnumber",direction:1}]}
+                    searchquery = searchquery + "&model_query={\"company\":{\"$regex\":\"" + inputCompanyName.toString() + "\"}}";
+//                searchquery = new String("model_query={\"company\":{\"$regex\":\""+ inputCompanyName.toString() + "\"}}&model_query_pageable={enable:true,pageSize:1000,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=company");
+                } else if ((!selectBigid.equals("-1")) && selectMiddleid.equals("-1")) {
+                    //인정분야 선택 있고 세부분야 선택 없을 때
+                    System.out.println("4");
+                    searchquery = searchquery + "&model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"company\":{\"$regex\":\"" + inputCompanyName + "\"}}]}";
+//                searchquery = new String("model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"company\":{\"$regex\":\""+ inputCompanyName + "\"}}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+                } else {
+                    //세부분야의 선택이 있을 때
+                    System.out.println("5");
+                    searchquery = searchquery + "&model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"},{\"company\":{\"$regex\":\"" + inputCompanyName + "\"}}]}";
+//                searchquery = new String("model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"},{\"company\":{\"$regex\":\""+ inputCompanyName + "\"}}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+                }
             }
         }
+
         else{
-            //기관명 검색어 입력이 있을 때
-            if (selectBigid.equals("-1")){
-                //인정분야에 대한 선택이 없을 때 -> 모든 기관들 데이터
-                System.out.println("3");
-                searchquery = new String("model_query={\"company\":{\"$regex\":\""+ inputCompanyName + "\"}}&model_query_pageable={enable:true,pageSize:1000,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+            //도시 선택이 있을 때
+            try{
+                selectCity = URLEncoder.encode(selectCity,"UTF-8");
+            } catch (Exception e){
+                System.out.println(e.toString());
             }
-            else if ((!selectBigid.equals("-1"))&&selectMiddleid.equals("-1")) {
-                //인정분야 선택 있고 세부분야 선택 없을 때
-                System.out.println("4");
-                searchquery = new String("model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"company\":{\"$regex\":\""+ inputCompanyName + "\"}}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+            if (inputCompanyName.length() == 0) {
+                //기관명 검색어 입력이 없을 때
+                if (selectBigid.equals("-1")) {
+                    //인정분야에 대한 선택이 없을 때 -> 모든 기관들 데이터
+                    System.out.println("1");
+                    searchquery = new String("model_query={\"delegateaddr\":{\"$regex\":\""+ selectCity +"\"}model_query_pageable={enable:true,pageSize:1000}&model_query_distinct=companyno");
+
+                } else if ((!selectBigid.equals("-1")) && selectMiddleid.equals("-1")) {
+                    //인정분야 선택 있고 세부분야 선택 없을 때
+                    System.out.println("2");
+                    searchquery = searchquery + "&model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"delegateaddr\":{\"$regex\":\""+ selectCity +"\"}}]}";
+//                searchquery = new String("model_query={\"bigid\":\"" + selectBigid + "\"}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+                } else {
+                    //세부분야의 선택이 있을 때
+                    searchquery = searchquery + "&model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"},{\"delegateaddr\":{\"$regex\":\""+ selectCity +"\"}}]}";
+//                searchquery = new String("model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+                }
             } else {
-                //세부분야의 선택이 있을 때
-                System.out.println("5");
-                searchquery = new String("model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"},{\"company\":{\"$regex\":\""+ inputCompanyName + "\"}}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+                try {
+                    inputCompanyName = URLEncoder.encode(inputCompanyName, "UTF-8");
+                } catch (Exception e) {
+                    System.out.println(e.toString());
+                }
+                //기관명 검색어 입력이 있을 때
+                if (selectBigid.equals("-1")) {
+                    //인정분야에 대한 선택이 없을 때 -> 모든 기관들 데이터
+                    System.out.println("3");//&model_query_pageable={enable:true,pageSize:1000,sortOrders:[{property:"accreditnumber",direction:1}]}
+                    searchquery = searchquery + "&model_query={$and:[{\"company\":{\"$regex\":\"" + inputCompanyName.toString() + "\"}},{\"delegateaddr\":{\"$regex\":\""+ selectCity +"\"}}]}";
+//                searchquery = new String("model_query={\"company\":{\"$regex\":\""+ inputCompanyName.toString() + "\"}}&model_query_pageable={enable:true,pageSize:1000,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=company");
+                } else if ((!selectBigid.equals("-1")) && selectMiddleid.equals("-1")) {
+                    //인정분야 선택 있고 세부분야 선택 없을 때
+                    System.out.println("4");
+                    searchquery = searchquery + "&model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"company\":{\"$regex\":\"" + inputCompanyName + "\"}},{\"delegateaddr\":{\"$regex\":\""+ selectCity +"\"}}]}";
+//                searchquery = new String("model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"company\":{\"$regex\":\""+ inputCompanyName + "\"}}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+                } else {
+                    //세부분야의 선택이 있을 때
+                    System.out.println("5");
+                    searchquery = searchquery + "&model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"},{\"company\":{\"$regex\":\"" + inputCompanyName + "\"}},{\"delegateaddr\":{\"$regex\":\""+ selectCity +"\"}}]}";
+//                searchquery = new String("model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"},{\"company\":{\"$regex\":\""+ inputCompanyName + "\"}}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+                }
             }
         }
-
         String instrUrl = searchUrl + searchUrlKey + searchquery;
         results = new ArrayList<ResultData>();
 
@@ -482,7 +564,7 @@ public class CheckActivity extends ActionBarActivity {
                 injson = injArr.getJSONObject(j);
                 String companyName = injson.getString("company");
                 //System.out.println(middleName);
-                String addr = injson.getString("corporateaddr");
+                String addr = injson.getString("delegateaddr");
                 String accreditNumber = injson.getString("accreditnumber");
 //                System.out.println(companyName + addr + accreditNumber);
                 results.add(new ResultData(companyName, addr, accreditNumber));
