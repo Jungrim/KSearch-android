@@ -21,13 +21,16 @@ public class CustomBaseAdapter extends BaseAdapter {
 
     private LayoutInflater inflater = null;
     private ArrayList<InfoClass> infoList = null;
-    private ViewHolder viewHolder = null;
+    private ViewHolder[] viewHolder = null;
     private Context mContext = null;
+    private boolean[] checkList;
 
-    public CustomBaseAdapter(Context c , ArrayList<InfoClass> arrays){
+    public CustomBaseAdapter(Context c , ArrayList<InfoClass> arrays, boolean[] checkList){
         this.mContext = c;
         this.inflater = LayoutInflater.from(c);
         this.infoList = arrays;
+        this.checkList = checkList;
+        viewHolder = new ViewHolder[arrays.size()];
     }
 
     // Adapter가 관리할 Data의 개수를 설정 합니다.
@@ -53,29 +56,28 @@ public class CustomBaseAdapter extends BaseAdapter {
     public View getView(int position, View convertview, ViewGroup parent) {
 
        // View v = convertview;
-        ViewHolder viewHolder;
-
+        viewHolder[position] = new ViewHolder();
         if(convertview == null){
             convertview = inflater.inflate(R.layout.list_row,null);
-            viewHolder = new ViewHolder();
 
-            viewHolder.tv_title = (TextView)convertview.findViewById(R.id.tv_title);
+            viewHolder[position].tv_title = (TextView)convertview.findViewById(R.id.tv_title);
 //            viewHolder.iv_image = (ImageView)convertview.findViewById(R.id.iv_image);
 //            viewHolder.btn_button = (Button)convertview.findViewById(R.id.btn_button);
-            viewHolder.cb_box = (CheckBox)convertview.findViewById(R.id.cb_box);
+            viewHolder[position].cb_box = (CheckBox)convertview.findViewById(R.id.cb_box);
 
-            convertview.setTag(viewHolder);
+            convertview.setTag(viewHolder[position]);
 
         }else {
-            viewHolder = (ViewHolder)convertview.getTag();
+
+            viewHolder[position] = (ViewHolder)convertview.getTag();
         }
 
-        viewHolder.tv_title.setTextColor(Color.BLACK);
+        viewHolder[position].tv_title.setTextColor(Color.BLACK);
 //        viewHolder.tv_title.setTextSize(12);
-        viewHolder.tv_title.setLines(3);
+        viewHolder[position].tv_title.setLines(3);
 //        viewHolder.tv_title.setWidth(500);
-        viewHolder.tv_title.setEllipsize(TextUtils.TruncateAt.MARQUEE);
-        viewHolder.tv_title.setText(getItem(position).title);
+        viewHolder[position].tv_title.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+        viewHolder[position].tv_title.setText(getItem(position).title);
 
         // image 나 button 등에 Tag를 사용해서 position 을 부여해 준다.
         // Tag란 View를 식별할 수 있게 바코드 처럼 Tag를 달아 주는 View의 기능
@@ -87,10 +89,11 @@ public class CustomBaseAdapter extends BaseAdapter {
 //        viewHolder.btn_button.setText(getItem(position).button);
 //        viewHolder.btn_button.setOnClickListener(buttonClickListener);
 
-        viewHolder.cb_box.setTag(position);
-        viewHolder.cb_box.setChecked(false);
-        viewHolder.cb_box.setChecked(((ListView)parent).isItemChecked(position));
-        viewHolder.cb_box.setOnClickListener(buttonClickListener);
+        viewHolder[position].cb_box.setChecked(checkList[position]);
+        viewHolder[position].cb_box.setTag(position);
+//        viewHolder.cb_box.setChecked(false);
+//        viewHolder.cb_box.setChecked(((ListView)parent).isItemChecked(position));
+        viewHolder[position].cb_box.setOnClickListener(buttonClickListener);
 
         return convertview;
     }
@@ -132,7 +135,8 @@ public class CustomBaseAdapter extends BaseAdapter {
                 // CheckBox
                 case R.id.cb_box:
                     System.out.println(v.getTag());
-
+                    checkList[Integer.parseInt(v.getTag().toString())] = !checkList[Integer.parseInt(v.getTag().toString())];
+//                    viewHolder[Integer.parseInt(v.getTag().toString())].cb_box.setChecked(checkList[Integer.parseInt(v.getTag().toString())]);
                     Toast.makeText(
                             mContext,
                             "체크박스 Tag = " + v.getTag(),

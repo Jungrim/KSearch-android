@@ -49,10 +49,10 @@ public class CheckActivity extends ActionBarActivity {
     private BigMiddleConnect[] dataList;
     private String selectBigid;
     private String selectMiddleid;
-//    private String inputCompanyName;
+    private String inputCompanyName;
     private ListView resultView;
     private ArrayList<ResultData> results;
-//    private EditText userInput;
+    private EditText userInput;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +61,7 @@ public class CheckActivity extends ActionBarActivity {
         middleSpinner = (Spinner)findViewById(R.id.middle_spinner);
         searchButton = (Button)findViewById(R.id.search_button);
         searchButton.setOnClickListener(new searchButtonListener());
-//        userInput = (EditText)findViewById(R.id.company_name);
+        userInput = (EditText)findViewById(R.id.company_name);
         new BigAdapterTask().execute();
         resultView = (ListView) findViewById(R.id.result_view);
     }
@@ -69,8 +69,8 @@ public class CheckActivity extends ActionBarActivity {
     public class searchButtonListener implements View.OnClickListener {
         public void onClick(View v){
             //Toast.makeText(getApplicationContext(), selectBigname+selectMiddlename, Toast.LENGTH_SHORT).show();
-//            inputCompanyName = new String(userInput.getText().toString());
-//            System.out.println(inputCompanyName);
+            inputCompanyName = new String(userInput.getText().toString());
+            System.out.println(inputCompanyName);
             new ResultTask().execute();
         }
     }
@@ -97,6 +97,7 @@ public class CheckActivity extends ActionBarActivity {
         private ArrayList<InfoClass> infoList;
         CustomBaseAdapter resultAdapter;
         private ProgressDialog dialog;
+        private boolean[] checkList;
 
         @Override
         protected void onPreExecute() {
@@ -122,12 +123,14 @@ public class CheckActivity extends ActionBarActivity {
             //데이터를 모두 얻어온 다음 실행되는 부분으로 로딩창을 끝내고
             //얻어온 데이터를 뷰에 붙여서 보여줌
             //후에 정림이가 만든 ListView로 수정
-
+            checkList = new boolean[results.size()];
+            int i = 0;
             dialog.dismiss();
             for(ResultData tmpData : results){
                 infoList.add(new InfoClass(tmpData.getData(),getResources().getDrawable(R.drawable.ic_launcher),""+ (results.indexOf(tmpData)+1)));
+                checkList[i++] = tmpData.getCheck();
             }
-            resultView.setAdapter(new CustomBaseAdapter(getApplicationContext(),infoList));
+            resultView.setAdapter(new CustomBaseAdapter(getApplicationContext(),infoList,checkList));
 
         }
     }
@@ -351,13 +354,15 @@ public class CheckActivity extends ActionBarActivity {
         private String companyName;
         private String addr;
         private String accreditNumber;
+        private boolean check = false;
 
         public ResultData(String companyName,String addr,String accreditNumber){
             this.companyName = companyName;
             this.addr = addr;
             this.accreditNumber = accreditNumber;
         }
-
+        public void setCheck(){ check = !check; }
+        public boolean getCheck(){ return check; }
         public String getCompanyName(){
             return companyName;
         }
@@ -429,15 +434,13 @@ public class CheckActivity extends ActionBarActivity {
         String searchUrlKey = "3f7f0c56c14ad73f3a0534ba2999f4a2?";
         String searchquery;// = "model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno";
 
-//        if(inputCompanyName.length() == 0) {
+        if(inputCompanyName.length() == 0) {
             //기관명 검색어 입력이 없을 때
-            if (selectBigid.equals("-1")){
+            if (selectBigid.equals("-1")) {
                 //인정분야에 대한 선택이 없을 때 -> 모든 기관들 데이터
                 System.out.println("1");
-                searchquery = new String("model_query_pageable={enable:true,pageSize:1000,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
-            }
-
-            else if ((!selectBigid.equals("-1"))&&selectMiddleid.equals("-1")) {
+                searchquery = new String("model_query_pageable={enable:true,pageSize:1000}&model_query_distinct=companyno");
+            } else if ((!selectBigid.equals("-1")) && selectMiddleid.equals("-1")) {
                 //인정분야 선택 있고 세부분야 선택 없을 때
                 System.out.println("2");
                 searchquery = new String("model_query={\"bigid\":\"" + selectBigid + "\"}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
@@ -445,24 +448,24 @@ public class CheckActivity extends ActionBarActivity {
                 //세부분야의 선택이 있을 때
                 searchquery = new String("model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
             }
-//        }
-//        else{
-//            //기관명 검색어 입력이 있을 때
-//            if (selectBigid.equals("-1")){
-//                //인정분야에 대한 선택이 없을 때 -> 모든 기관들 데이터
-//                System.out.println("3");
-//                searchquery = new String("model_query={\"company\":{\"$regex\":\""+ inputCompanyName + "\"}}&model_query_pageable={enable:true,pageSize:1000,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
-//            }
-//            else if ((!selectBigid.equals("-1"))&&selectMiddleid.equals("-1")) {
-//                //인정분야 선택 있고 세부분야 선택 없을 때
-//                System.out.println("4");
-//                searchquery = new String("model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"company\":{\"$regex\":\""+ inputCompanyName + "\"}}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
-//            } else {
-//                //세부분야의 선택이 있을 때
-//                System.out.println("5");
-//                searchquery = new String("model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"},{\"company\":{\"$regex\":\""+ inputCompanyName + "\"}}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
-//            }
-//        }
+        }
+        else{
+            //기관명 검색어 입력이 있을 때
+            if (selectBigid.equals("-1")){
+                //인정분야에 대한 선택이 없을 때 -> 모든 기관들 데이터
+                System.out.println("3");
+                searchquery = new String("model_query={\"company\":{\"$regex\":\""+ inputCompanyName + "\"}}&model_query_pageable={enable:true,pageSize:1000,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+            }
+            else if ((!selectBigid.equals("-1"))&&selectMiddleid.equals("-1")) {
+                //인정분야 선택 있고 세부분야 선택 없을 때
+                System.out.println("4");
+                searchquery = new String("model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"company\":{\"$regex\":\""+ inputCompanyName + "\"}}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+            } else {
+                //세부분야의 선택이 있을 때
+                System.out.println("5");
+                searchquery = new String("model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"},{\"company\":{\"$regex\":\""+ inputCompanyName + "\"}}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+            }
+        }
 
         String instrUrl = searchUrl + searchUrlKey + searchquery;
         results = new ArrayList<ResultData>();
