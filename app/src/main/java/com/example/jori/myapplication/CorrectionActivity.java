@@ -30,14 +30,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 
 public class CorrectionActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-    TextView tvCorrect;
-//    BigMiddleConnect[] correctList;
- //   DataNameList[] correctList;
+
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private CharSequence mTitle;
     String[] bignameList = {"길이 및 관련량","질량 및 관련량","시간 및 주파수","전기·자기/전자파","온도 및 습도","음향, 초음파 및 진동","광량","전리방사선","물질량"};
@@ -56,12 +55,11 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
     private String selectMiddleid;
     private String selectSmall;
     private String selectCity;
-
+    private boolean[] checkList;
     private Spinner citySpinner;
-    //    private String inputCompanyName;
+
     private ListView resultView;
     private ArrayList<ResultData> results;
-    //    private EditText userInput;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -173,13 +171,14 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
         protected void onPostExecute(Void id) {
             //데이터를 모두 얻어온 다음 실행되는 부분으로 로딩창을 끝내고
             //얻어온 데이터를 뷰에 붙여서 보여줌
-            //후에 정림이가 만든 ListView로 수정
-
+            checkList = new boolean[results.size()];
             dialog.dismiss();
+            int i = 0;
             for(ResultData tmpData : results){
                 infoList.add(new InfoClass(tmpData.getData(),getResources().getDrawable(R.drawable.ic_launcher),""+ (results.indexOf(tmpData)+1)));
+                checkList[i++] = tmpData.getCheck();
             }
-//            resultView.setAdapter(new CustomBaseAdapter(getApplicationContext(),infoList));
+            resultView.setAdapter(new CustomBaseAdapter(getApplicationContext(),infoList,checkList));
 
         }
     }
@@ -433,12 +432,16 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
         private String companyName;
         private String addr;
         private String accreditNumber;
+        private boolean check = false;
 
         public ResultData(String companyName,String addr,String accreditNumber){
             this.companyName = companyName;
             this.addr = addr;
             this.accreditNumber = accreditNumber;
         }
+
+        public void setCheck(){ check = !check; }
+        public boolean getCheck(){ return check; }
 
         public String getCompanyName(){
             return companyName;
@@ -555,27 +558,72 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
     public void makeSearchQuery(){
         //검색버튼 클릭시에 작동하는 메소드로 선택된 대분류Id(selectBigid)와 세부분야Id(selectMiddleid)를 통해서
         //API로 부터 해당하는 기관을 찾아준다.
-        String searchUrl = "http://ibtk.kr/inspectionAgencyDetail_api/";
-        String searchUrlKey = "3f7f0c56c14ad73f3a0534ba2999f4a2?";
-        String searchquery;// = "model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno";
+        String searchUrl = "http://ibtk.kr/correctionalInstitutionsDetail_api/";
+        String searchUrlKey = "2e4e5566d93c1eb3d0d51448e2d0422b?";
+        String searchquery = "model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno";
 
-//        if(inputCompanyName.length() == 0) {
-        //기관명 검색어 입력이 없을 때
-        if (selectBigid.equals("-1")){
-            //인정분야에 대한 선택이 없을 때 -> 모든 기관들 데이터
-            System.out.println("1");
-            searchquery = new String("model_query_pageable={enable:true,pageSize:1000,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+        if(selectCity.length() == 0) {
+            //도시 선택이 없을 때
+            if (selectBigid.equals("-1")) {
+                    //대분류에 대한 선택이 없을 때 -> 모든 기관들 데이터
+                System.out.println("1");
+                searchquery = new String("model_query_pageable={enable:true,pageSize:1000}&model_query_distinct=companyno");
+            } else if ((!selectBigid.equals("-1")) && selectMiddleid.equals("-1")) {
+                    //대분류 선택 있고 중분류 선택 없을 때
+                System.out.println("2");
+                searchquery = searchquery + "&model_query={\"bigid\":\"" + selectBigid + "\"}";
+//                searchquery = new String("model_query={\"bigid\":\"" + selectBigid + "\"}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+            } else {
+                //중분류의 선택이 있을 때
+                if (selectSmall.equals(("소분류"))) {
+                    //소분류의 선택이 없을 때
+                    searchquery = searchquery + "&model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"}]}";
+//                searchquery = new String("model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+                } else {
+                    //소분류의 선택이 있을 때
+                    try {
+                        selectSmall = URLEncoder.encode(selectSmall, "UTF-8");
+                    } catch (Exception e) {
+                        System.out.println(e.toString());
+                    }
+                    searchquery = searchquery + "&model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"},{\"smallname\":\"" + selectSmall + "\"}]}";
+                }
+            }
         }
+        else {
+            //도시 선택이 있을 때
+            try {
+                selectCity = URLEncoder.encode(selectCity, "UTF-8");
+            } catch (Exception e) {
+                System.out.println(e.toString());
+            }
 
-        else if ((!selectBigid.equals("-1"))&&selectMiddleid.equals("-1")) {
-            //인정분야 선택 있고 세부분야 선택 없을 때
-            System.out.println("2");
-            searchquery = new String("model_query={\"bigid\":\"" + selectBigid + "\"}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
-        } else {
-            //세부분야의 선택이 있을 때
-            searchquery = new String("model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+            if (selectBigid.equals("-1")) {
+                //대분류에 대한 선택이 없을 때 -> 모든 기관들 데이터
+                System.out.println("1");
+                searchquery = new String("model_query={\"delegateaddr\":{\"$regex\":\"" + selectCity + "\"}}&model_query_pageable={enable:true,pageSize:1000}&model_query_distinct=companyno");
+            } else if ((!selectBigid.equals("-1")) && selectMiddleid.equals("-1")) {
+                //대분류 선택 있고 중분류 선택 없을 때
+                System.out.println("2");
+                searchquery = searchquery + "&model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"delegateaddr\":{\"$regex\":\"" + selectCity + "\"}}]}";
+//              searchquery = new String("model_query={\"bigid\":\"" + selectBigid + "\"}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+            } else {
+                //중분야의 선택이 있을 때
+                if (selectSmall.equals("소분류")) {
+                    //소분류의 선택이 없을 때
+                    searchquery = searchquery + "&model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"},{\"delegateaddr\":{\"$regex\":\"" + selectCity + "\"}}]}";
+//                  searchquery = new String("model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"}]}&model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno");
+                } else {
+                    try {
+                        selectSmall = URLEncoder.encode(selectSmall, "UTF-8");
+                    } catch (Exception e) {
+                        System.out.println(e.toString());
+                    }
+                    //소분류의 선택이 있을 때
+                    searchquery = searchquery + "&model_query={$and:[{\"bigid\":\"" + selectBigid + "\"},{\"middleid\":\"" + selectMiddleid + "\"},{\"smallname\":\"" + selectSmall + "\"},{\"delegateaddr\":{\"$regex\":\"" + selectCity + "\"}}]}";
+                }
+            }
         }
-
         String instrUrl = searchUrl + searchUrlKey + searchquery;
         results = new ArrayList<ResultData>();
 
@@ -591,7 +639,7 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
                 injson = injArr.getJSONObject(j);
                 String companyName = injson.getString("company");
                 //System.out.println(middleName);
-                String addr = injson.getString("corporateaddr");
+                String addr = injson.getString("delegateaddr");
                 String accreditNumber = injson.getString("accreditnumber");
 //                System.out.println(companyName + addr + accreditNumber);
                 results.add(new ResultData(companyName, addr, accreditNumber));
