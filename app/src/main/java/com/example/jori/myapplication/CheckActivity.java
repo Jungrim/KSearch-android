@@ -132,7 +132,7 @@ public class CheckActivity extends ActionBarActivity {
             int i = 0;
             dialog.dismiss();
             for(ResultData tmpData : results){
-                infoList.add(new InfoClass(tmpData.getData(),getResources().getDrawable(R.drawable.ic_launcher),""+ (results.indexOf(tmpData)+1)));
+                infoList.add(new InfoClass(tmpData.getAccreditNumber(),tmpData.getCompanyName(),tmpData.getAddr()));
                 checkList[i++] = tmpData.getCheck();
             }
             resultView.setAdapter(new CustomBaseAdapter(getApplicationContext(),infoList,checkList));
@@ -386,13 +386,14 @@ public class CheckActivity extends ActionBarActivity {
         public void setCheck(){ check = !check; }
         public boolean getCheck(){ return check; }
         public String getCompanyName(){
-            return companyName;
+            return companyName+"\n";
         }
+        public String getAccreditNumber() { return accreditNumber+"\n"; }
         public String getData(){
             return accreditNumber + "\n" + companyName + "\n" + addr +"\n";
         }
         public String getAddr(){
-            return addr;
+            return addr+"\n";
         }
     }
 

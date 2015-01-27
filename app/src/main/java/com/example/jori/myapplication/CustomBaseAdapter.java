@@ -77,7 +77,7 @@ public class CustomBaseAdapter extends BaseAdapter {
         viewHolder[position].tv_title.setLines(3);
 //        viewHolder.tv_title.setWidth(500);
         viewHolder[position].tv_title.setEllipsize(TextUtils.TruncateAt.MARQUEE);
-        viewHolder[position].tv_title.setText(getItem(position).title);
+        viewHolder[position].tv_title.setText(getItem(position).getAccreditNumber()+getItem(position).getCompany()+getItem(position).getAddr());
 
         // image 나 button 등에 Tag를 사용해서 position 을 부여해 준다.
         // Tag란 View를 식별할 수 있게 바코드 처럼 Tag를 달아 주는 View의 기능

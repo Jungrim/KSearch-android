@@ -63,7 +63,7 @@ public class CustomArrayAdapter extends ArrayAdapter<InfoClass> {
             viewHolder = (ViewHolder)v.getTag();
         }
 
-        viewHolder.tv_title.setText(getItem(position).title);
+        viewHolder.tv_title.setText(getItem(position).getAccreditNumber()+getItem(position).getCompany()+getItem(position).getAddr());
 
         viewHolder.iv_image.setOnClickListener(buttonClickListener);
         viewHolder.iv_image.setTag(position);

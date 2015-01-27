@@ -3,15 +3,29 @@ package com.example.jori.myapplication;
 import android.graphics.drawable.Drawable;
 
 public class InfoClass {
-    public String title;
+    private String company;
+    private String accreditNumber;
+    private String addr;
     public Drawable image;
     public String button;
 
     public InfoClass() { }
 
-    public InfoClass(String title, Drawable image, String button){
-        this.title = title;
-        this.image = image;
-        this.button = button;
+    public InfoClass(String accreditNumber, String company, String addr){
+        this.accreditNumber = accreditNumber;
+        this.company = company;
+        this.addr = addr;
+    }
+
+    public String getCompany(){
+        return company;
+    }
+
+    public String getAccreditNumber(){
+        return accreditNumber;
+    }
+
+    public String getAddr(){
+        return addr;
     }
 }

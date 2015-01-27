@@ -175,7 +175,7 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
             dialog.dismiss();
             int i = 0;
             for(ResultData tmpData : results){
-                infoList.add(new InfoClass(tmpData.getData(),getResources().getDrawable(R.drawable.ic_launcher),""+ (results.indexOf(tmpData)+1)));
+                infoList.add(new InfoClass(tmpData.getAccreditNumber(),tmpData.getCompanyName(),tmpData.getAddr()));
                 checkList[i++] = tmpData.getCheck();
             }
             resultView.setAdapter(new CustomBaseAdapter(getApplicationContext(),infoList,checkList));
@@ -432,6 +432,7 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
         private String companyName;
         private String addr;
         private String accreditNumber;
+
         private boolean check = false;
 
         public ResultData(String companyName,String addr,String accreditNumber){
@@ -442,7 +443,7 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
 
         public void setCheck(){ check = !check; }
         public boolean getCheck(){ return check; }
-
+        public String getAccreditNumber() { return accreditNumber; }
         public String getCompanyName(){
             return companyName;
         }
