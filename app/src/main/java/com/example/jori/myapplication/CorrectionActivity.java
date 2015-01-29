@@ -443,15 +443,15 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
 
         public void setCheck(){ check = !check; }
         public boolean getCheck(){ return check; }
-        public String getAccreditNumber() { return accreditNumber; }
+        public String getAccreditNumber() { return accreditNumber+"\n"; }
         public String getCompanyName(){
-            return companyName;
+            return companyName+"\n";
         }
         public String getData(){
             return accreditNumber + "\n" + companyName + "\n" + addr +"\n";
         }
         public String getAddr(){
-            return addr;
+            return addr+"\n";
         }
     }
     public class SmallData{
