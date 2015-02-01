@@ -40,6 +40,11 @@
             android:name=".OftenActivity"
             android:label="@string/title_activity_often" >
         </activity>
+        <activity
+            android:name=".NMap"
+            android:label="NMap" >
+        </activity>
+
     </application>
 
 </manifest>

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.view.KeyEvent;
 
 
@@ -69,8 +70,17 @@ public class CheckActivity extends ActionBarActivity {
         userInput = (EditText)findViewById(R.id.company_name);
         new BigAdapterTask().execute();
         resultView = (ListView) findViewById(R.id.result_view);
+        resultView.setOnItemClickListener(new resultViewListener());
     }
 
+    public class resultViewListener implements ListView.OnItemClickListener{
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Intent intent = new Intent(CheckActivity.this,NMap.class);
+            startActivity(intent);
+        }
+    }
     public class searchButtonListener implements View.OnClickListener {
         public void onClick(View v){
             //Toast.makeText(getApplicationContext(), selectBigname+selectMiddlename, Toast.LENGTH_SHORT).show();
