@@ -2,6 +2,7 @@ package com.example.jori.myapplication;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.media.Image;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -10,6 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -35,11 +37,14 @@ public class MainActivity extends ActionBarActivity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+    private NotesDbAdapter dbAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        dbAdapter = new NotesDbAdapter(this);
+        dbAdapter.open();
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -95,6 +100,19 @@ public class MainActivity extends ActionBarActivity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         if(position==0) {
+            dbAdapter.createNote("죨","휘경동");
+
+                Cursor result = dbAdapter.fetchAllNotes();
+                result.moveToFirst();
+                while (!result.isAfterLast()) {
+
+                    String title = result.getString(1);
+                    String body = result.getString(2);
+                    System.out.println(title);
+                    System.out.println(body);
+                    result.moveToNext();
+                }
+                result.close();
             Intent i = new Intent(this,CheckActivity.class);
             Bundle b= new Bundle();
             b.putInt("position",position);
