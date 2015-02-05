@@ -11,14 +11,14 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_check">CheckActivity</string>
+    <string name="title_activity_check">검사 기관</string>
     <string name="hello_world">Hello world!</string>
-    <string name="title_activity_correction">CorrectionActivity</string>
-    <string name="title_activity_exam">ExamActivity</string>
-    <string name="title_activity_material">MaterialActivity</string>
+    <string name="title_activity_correction">교정 기관</string>
+    <string name="title_activity_exam">시험 기관</string>
+    <string name="title_activity_material">표준물질생성 기관</string>
     <string name="title_activity_often">OftenActivity</string>
+    <string name="str_done">완료</string>
     <string-array name="city">
-
         <item>시도별</item>
         <item>서울</item>
         <item>부산</item>
@@ -37,7 +37,6 @@
         <item>전라남도</item>
         <item>경상북도</item>
         <item>경상남도</item>
-
     </string-array>
 
 </resources>
