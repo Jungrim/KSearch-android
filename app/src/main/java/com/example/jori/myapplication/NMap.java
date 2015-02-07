@@ -1,6 +1,7 @@
 package com.example.jori.myapplication;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -13,6 +14,7 @@ import com.nhn.android.maps.maplib.NGeoPoint;
 import com.nhn.android.maps.nmapmodel.NMapError;
 import com.nhn.android.maps.nmapmodel.NMapPlacemark;
 import com.nhn.android.maps.overlay.NMapPOIdata;
+import com.nhn.android.maps.overlay.NMapPOIitem;
 import com.nhn.android.mapviewer.overlay.NMapOverlayManager;
 import com.nhn.android.mapviewer.overlay.NMapPOIdataOverlay;
 
@@ -23,6 +25,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Vector;
 
 public class NMap extends NMapActivity {
     private static final String API_KEY = "770d3836366fcee226c976b9d6624d7c";
@@ -33,12 +36,16 @@ public class NMap extends NMapActivity {
     private NMapPOIdataOverlay poiDataOverlay;
     private String lat;
     private String lon;
+    private ResultData result;
     /**
      * Called when the activity is first created.
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
+        result = (ResultData)intent.getSerializableExtra("Result");
+
         //네이버 지도 MapView를 생성해준다.
         mMapView = new NMapView(this);
         //resource provider 생성
@@ -53,20 +60,20 @@ public class NMap extends NMapActivity {
         setContentView(mMapView);
         //네이버 지도의 클릭이벤트를 처리 하도록한다.
         mMapView.setClickable(true);
-   //     new ResultTask().execute("서울동대문구전농동103-44");
+        new getAddrTask().execute(result.getAddr(),result.getCompanyName());
 
         int markerId = NMapPOIflagType.PIN;
 //        System.out.println("lat"+this.lat+"lon"+this.lon);
 // set POI data
-        NMapPOIdata poiData = new NMapPOIdata(2, nMapViewerResourceProvider);
-        poiData.beginPOIdata(2);
-        poiData.addPOIitem(127.055, 37.49, "Pizza 789-1011", markerId, 0);
-        poiData.addPOIitem(127.061, 37.51, "Pizza 123-456", markerId, 0);
-        poiData.endPOIdata();
-
-// create POI data overlay
-        poiDataOverlay = overlayManager.createPOIdataOverlay(poiData, null);
-        poiDataOverlay.showAllPOIdata(0);
+//        NMapPOIdata poiData = new NMapPOIdata(2, nMapViewerResourceProvider);
+//        poiData.beginPOIdata(2);
+//        poiData.addPOIitem(127.055, 37.49, "Pizza 789-1011", markerId, 0);
+//        poiData.addPOIitem(127.061, 37.51, "Pizza 123-456", markerId, 0);
+//        poiData.endPOIdata();
+//
+//// create POI data overlay
+//        poiDataOverlay = overlayManager.createPOIdataOverlay(poiData, null);
+//        poiDataOverlay.showAllPOIdata(0);
 
         //맵의 상태가 변할때 이메소드를 탄다.
 //        mMapView.setOnMapStateChangeListener(new NMapView.OnMapStateChangeListener() {
@@ -161,11 +168,33 @@ public class NMap extends NMapActivity {
 //        });
 
     }
-
+    private class getAddrTask extends AsyncTask<String,String,String>{
+        private ProgressDialog dialog;
+        private String addr;
+        protected void onPreExecute() {
+            //쿼리를 날려 데이터를 만들기 전에 미리 작동되는 부분으로
+            //로딩 창을 만들어서 띄워줌
+            dialog = new ProgressDialog(NMap.this);
+            //          dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            dialog.setMessage("Loading");
+            dialog.show();
+            super.onPreExecute();
+        }
+        @Override
+        protected String doInBackground(String... args){
+            this.addr = getAddr(args[0],args[1]);
+            return this.addr;
+        }
+        protected void onPostExecute(String addr) {
+            new ResultTask().execute(this.addr);
+            dialog.dismiss();
+        }
+    }
     private class ResultTask extends AsyncTask<String, String, String> {
         //검색 버튼 누를시에 작동하는 AsyncTask로 resultData를 만든다.
 //        ArrayAdapter<String> resultAdapter;
         private ProgressDialog dialog;
+        private NGeoPoint nPoint;
         @Override
         protected void onPreExecute() {
             //쿼리를 날려 데이터를 만들기 전에 미리 작동되는 부분으로
@@ -182,19 +211,91 @@ public class NMap extends NMapActivity {
             return args[0];
         }
         protected void onPostExecute(String addr) {
+            dialog.dismiss();
             int markerId = NMapPOIflagType.PIN;
             // set POI data
-            System.out.println(Float.parseFloat(lon)+"||||"+Float.parseFloat(lat));
-            NMapPOIdata poiData = new NMapPOIdata(2, nMapViewerResourceProvider);
-            poiData.beginPOIdata(2);
-            poiData.addPOIitem(Float.parseFloat(lat), Float.parseFloat(lon), "우리집", markerId, 0);
-            poiData.addPOIitem(127.061, 37.51, "Pizza 123-456", markerId, 0);
+            float lonData = Float.parseFloat(lon);
+            float latData = Float.parseFloat(lat);
+            System.out.println(lonData+"||||"+latData);
+            NMapPOIdata poiData = new NMapPOIdata(1, nMapViewerResourceProvider);
+            poiData.beginPOIdata(1);
+            poiData.addPOIitem(lonData, latData, result.getCompanyName(), markerId, 0);
             poiData.endPOIdata();
             poiDataOverlay = overlayManager.createPOIdataOverlay(poiData, null);
             poiDataOverlay.showAllPOIdata(0);
         }
     }
+    public String getAddr(String inAddr,String companyName) {
+        String addr = "";
+        String aurl = "";
+        String mapxml = "";
+        String tmpCompanyName = "";
+        ArrayList<Integer> count = new ArrayList<Integer>();
+        ArrayList<String> tmpString = new ArrayList<String>();
 
+        for(int j=0;j<companyName.length();j++) {
+            if (companyName.charAt(j) == '(') {
+                for (int i = j; i < companyName.length(); i++) {
+                    //괄호안의 문자열 모두 제거 ex)(주),(시험),(교정)
+                    if (companyName.charAt(i) == ')') {
+                        count.add(j);
+                        count.add(i);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if(count.size()!=0){
+            for(int i=0;i<count.size();i+=2){
+                //System.out.println(companyName.charAt(count.get(i))+companyName.charAt(count.get(i+1)));
+                tmpString.add(companyName.substring(count.get(i),count.get(i+1)+1));
+            }
+        }
+        for(int i=0;i<tmpString.size();i++) {
+            System.out.println(tmpString.get(i));
+            companyName = companyName.replaceAll(tmpString.get(i),"");
+        }
+        System.out.println(companyName);
+        try{
+            inAddr = URLEncoder.encode(inAddr, "UTF-8");
+            companyName = URLEncoder.encode(companyName,"UTF-8");
+        } catch(Exception e){
+            System.out.println("murlEncodingError!");
+        }
+        aurl ="http://openapi.naver.com/search?key=00dfd51ceb4a1fad21b784348704cd64&query="+inAddr+companyName+"&target=local&start=1&display=1";
+
+        System.out.println("AddrUrl"+aurl);
+        try {
+            URL mapXmlUrl = new URL(aurl);  //URL연결하고 받아오고 하는 부분들은 import가 필요하다. java.net.*
+            HttpURLConnection urlConn = (HttpURLConnection) mapXmlUrl.openConnection();
+            urlConn.setDoOutput(true);
+            urlConn.setRequestMethod("POST");
+
+            int len = urlConn.getContentLength();  //받아오는 xml의 길이
+
+            if (len > 0) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
+                String inputLine = "";
+                while ((inputLine = br.readLine()) != null) {
+                    mapxml += inputLine;  //한글자씩 읽어옵니다
+                }
+                if (mapxml != null) {
+                    if (mapxml.indexOf("</item>") > -1) {   //item이 있으면 좌표를 받아와야지
+                        int first = 1;
+                        addr = mapxml.substring(mapxml.indexOf("address") + 8, mapxml.indexOf("</address>")); //경도 잘라오기
+                    }
+                }
+                System.out.println(addr);
+                br.close();  //버퍼리더 닫기
+            }
+            return addr;
+        } catch (Exception e) {
+            System.out.println("getAddr"+e.toString());
+            return e.toString();
+        }
+
+    }
     public void setLonLat(String addr) {
         String inlat = "";  //위도
         String inlon = "";  //경도

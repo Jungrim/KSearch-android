@@ -78,6 +78,7 @@ public class CheckActivity extends ActionBarActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Intent intent = new Intent(CheckActivity.this,NMap.class);
+            intent.putExtra("Result",results.get(position));
             startActivity(intent);
         }
     }
@@ -382,31 +383,31 @@ public class CheckActivity extends ActionBarActivity {
         }
     }
 
-    private class ResultData {
-        //검색을 통해 얻어진 데이터의 정보를 저장하고 있을 클래스
-        private String companyName;
-        private String addr;
-        private String accreditNumber;
-        private boolean check = false;
-
-        public ResultData(String companyName,String addr,String accreditNumber){
-            this.companyName = companyName;
-            this.addr = addr;
-            this.accreditNumber = accreditNumber;
-        }
-        public void setCheck(){ check = !check; }
-        public boolean getCheck(){ return check; }
-        public String getCompanyName(){
-            return companyName+"\n";
-        }
-        public String getAccreditNumber() { return accreditNumber+"\n"; }
-        public String getData(){
-            return accreditNumber + "\n" + companyName + "\n" + addr +"\n";
-        }
-        public String getAddr(){
-            return addr+"\n";
-        }
-    }
+//    private class ResultData {
+//        //검색을 통해 얻어진 데이터의 정보를 저장하고 있을 클래스
+//        private String companyName;
+//        private String addr;
+//        private String accreditNumber;
+//        private boolean check = false;
+//
+//        public ResultData(String companyName,String addr,String accreditNumber){
+//            this.companyName = companyName;
+//            this.addr = addr;
+//            this.accreditNumber = accreditNumber;
+//        }
+//        public void setCheck(){ check = !check; }
+//        public boolean getCheck(){ return check; }
+//        public String getCompanyName(){
+//            return companyName+"\n";
+//        }
+//        public String getAccreditNumber() { return accreditNumber+"\n"; }
+//        public String getData(){
+//            return accreditNumber + "\n" + companyName + "\n" + addr +"\n";
+//        }
+//        public String getAddr(){
+//            return addr+"\n";
+//        }
+//    }
 
     public void makeDataList() {
         //API URL로 부터 bigname을 가져와서 bigList에 입력
@@ -576,10 +577,11 @@ public class CheckActivity extends ActionBarActivity {
                 injson = injArr.getJSONObject(j);
                 String companyName = injson.getString("company");
                 //System.out.println(middleName);
-                String addr = injson.getString("delegateaddr");
+                String addr = injson.getString("corporateaddr");
                 String accreditNumber = injson.getString("accreditnumber");
+                String phoneNumber = injson.getString("delegatephone");
 //                System.out.println(companyName + addr + accreditNumber);
-                results.add(new ResultData(companyName, addr, accreditNumber));
+                results.add(new ResultData(companyName, addr, accreditNumber,phoneNumber));
 
             }
         } catch (Exception e){
