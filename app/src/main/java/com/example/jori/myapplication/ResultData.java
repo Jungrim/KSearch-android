@@ -10,13 +10,14 @@ public class ResultData implements Serializable {
     private String addr;
     private String accreditNumber;
     private String phoneNumber;
-    private boolean check = false;
+    private boolean check ;
 
-    public ResultData(String companyName,String addr,String accreditNumber,String phoneNumber){
+    public ResultData(String companyName,String addr,String accreditNumber,String phoneNumber,Boolean check){
         this.companyName = companyName;
         this.addr = addr;
         this.accreditNumber = accreditNumber;
         this.phoneNumber = phoneNumber;
+        this.check = check;
     }
     public void setCheck(){ check = !check; }
     public boolean getCheck(){ return check; }

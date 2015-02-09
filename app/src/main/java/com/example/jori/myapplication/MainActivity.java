@@ -43,8 +43,6 @@ public class MainActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        dbAdapter = new NotesDbAdapter(this);
-        dbAdapter.open();
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -100,19 +98,6 @@ public class MainActivity extends ActionBarActivity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         if(position==0) {
-            dbAdapter.createNote("죨","휘경동");
-
-                Cursor result = dbAdapter.fetchAllNotes();
-                result.moveToFirst();
-                while (!result.isAfterLast()) {
-
-                    String title = result.getString(1);
-                    String body = result.getString(2);
-                    System.out.println(title);
-                    System.out.println(body);
-                    result.moveToNext();
-                }
-                result.close();
             Intent i = new Intent(this,CheckActivity.class);
             Bundle b= new Bundle();
             b.putInt("position",position);

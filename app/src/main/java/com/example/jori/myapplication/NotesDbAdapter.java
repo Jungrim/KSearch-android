@@ -77,9 +77,9 @@ public class NotesDbAdapter {
         return mDb.insert(DATABASE_TABLE, null, initialValues);
     }
 
-    public boolean deleteNote(long rowId) {
-        Log.i("Delete called", "value__" + rowId);
-        return mDb.delete(DATABASE_TABLE, KEY_ROWID + "=" + rowId, null) > 0;
+    public boolean deleteNote(String name) {
+
+        return mDb.delete(DATABASE_TABLE, "title=?",new String[]{name}) > 0;
     }
 
     public Cursor fetchAllNotes() {

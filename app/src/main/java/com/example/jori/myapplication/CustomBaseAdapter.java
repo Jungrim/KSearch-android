@@ -2,6 +2,7 @@ package com.example.jori.myapplication;
 
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -25,12 +26,18 @@ public class CustomBaseAdapter extends BaseAdapter {
     private Context mContext = null;
     private boolean[] checkList;
 
+    private NotesDbAdapter dbAdapter;
+    private String comName;
+    private String comAddr;
     public CustomBaseAdapter(Context c , ArrayList<InfoClass> arrays, boolean[] checkList){
         this.mContext = c;
         this.inflater = LayoutInflater.from(c);
         this.infoList = arrays;
         this.checkList = checkList;
         viewHolder = new ViewHolder[arrays.size()];
+        dbAdapter = new NotesDbAdapter(mContext);
+        dbAdapter.open();
+
     }
 
     // Adapter가 관리할 Data의 개수를 설정 합니다.
@@ -137,6 +144,26 @@ public class CustomBaseAdapter extends BaseAdapter {
                     System.out.println(v.getTag());
                     checkList[Integer.parseInt(v.getTag().toString())] = !checkList[Integer.parseInt(v.getTag().toString())];
 //                    viewHolder[Integer.parseInt(v.getTag().toString())].cb_box.setChecked(checkList[Integer.parseInt(v.getTag().toString())]);
+                    System.out.println(checkList[Integer.parseInt(v.getTag().toString())]);
+                    comName = getItem(Integer.parseInt(v.getTag().toString())).getCompany();
+                    comAddr = getItem(Integer.parseInt(v.getTag().toString())).getAddr();
+                    if (checkList[Integer.parseInt(v.getTag().toString())])
+                        dbAdapter.createNote(comName,comAddr);
+                    else
+                        dbAdapter.deleteNote(comName);
+
+                    Cursor result = dbAdapter.fetchAllNotes();
+                    result.moveToFirst();
+                    while (!result.isAfterLast()) {
+
+                        String title = result.getString(1);
+                        String body = result.getString(2);
+                        System.out.println(title);
+                        System.out.println(body);
+                        result.moveToNext();
+                    }
+                    result.close();
+
                     Toast.makeText(
                             mContext,
                             "체크박스 Tag = " + v.getTag(),
