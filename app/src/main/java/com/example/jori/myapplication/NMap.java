@@ -37,13 +37,14 @@ public class NMap extends NMapActivity {
     private String lat;
     private String lon;
     private ResultData result;
+    private Intent intent;
     /**
      * Called when the activity is first created.
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent intent = getIntent();
+        intent = getIntent();
         result = (ResultData)intent.getSerializableExtra("Result");
 
         //네이버 지도 MapView를 생성해준다.
@@ -62,7 +63,6 @@ public class NMap extends NMapActivity {
         mMapView.setClickable(true);
         new getAddrTask().execute(result.getAddr(),result.getCompanyName());
 
-        int markerId = NMapPOIflagType.PIN;
 //        System.out.println("lat"+this.lat+"lon"+this.lon);
 // set POI data
 //        NMapPOIdata poiData = new NMapPOIdata(2, nMapViewerResourceProvider);
@@ -190,7 +190,7 @@ public class NMap extends NMapActivity {
             dialog.dismiss();
         }
     }
-    private class ResultTask extends AsyncTask<String, String, String> {
+    private class ResultTask extends AsyncTask<String, String, Boolean> {
         //검색 버튼 누를시에 작동하는 AsyncTask로 resultData를 만든다.
 //        ArrayAdapter<String> resultAdapter;
         private ProgressDialog dialog;
@@ -206,14 +206,21 @@ public class NMap extends NMapActivity {
             super.onPreExecute();
         }
         @Override
-        protected String doInBackground(String... args){
-            setLonLat(args[0]);
-            return args[0];
+        protected Boolean doInBackground(String... args){
+            if(!setLonLat(args[0]))
+                return false;
+            return true;
         }
-        protected void onPostExecute(String addr) {
+        protected void onPostExecute(Boolean jud) {
             dialog.dismiss();
             int markerId = NMapPOIflagType.PIN;
             // set POI data
+            if(!jud){
+                System.out.println("지도에서 못찾음 ");
+                Toast.makeText(getApplicationContext(),"지도에 찾을수가 없넼ㅋㅋ어쩌나" , Toast.LENGTH_SHORT).show();
+//                startActivity(intent);
+                return;
+            }
             float lonData = Float.parseFloat(lon);
             float latData = Float.parseFloat(lat);
             System.out.println(lonData+"||||"+latData);
@@ -296,11 +303,17 @@ public class NMap extends NMapActivity {
         }
 
     }
-    public void setLonLat(String addr) {
+    public boolean setLonLat(String addr) {
         String inlat = "";  //위도
         String inlon = "";  //경도
         String murl = ""; //연결할 URL
         String mapxml = ""; //받아온 xml
+
+        if(addr.length()==0){
+//            Toast.makeText(getApplicationContext(),"지도에 찾을수가 없넼ㅋㅋ어쩌나" , Toast.LENGTH_SHORT).show();
+//            startActivity(intent);
+            return false;
+        }
 
         try{
             addr = URLEncoder.encode(addr, "UTF-8");
@@ -310,7 +323,7 @@ public class NMap extends NMapActivity {
         murl = "http://openapi.map.naver.com/api/geocode.php?key="+API_KEY+"&encoding=utf-8&coord=latlng&query="+addr;
 
         System.out.println("MapUrl"+murl);
-        try {
+            try {
             URL mapXmlUrl = new URL(murl);  //URL연결하고 받아오고 하는 부분들은 import가 필요하다. java.net.*
             HttpURLConnection urlConn = (HttpURLConnection) mapXmlUrl.openConnection();
             urlConn.setDoOutput(true);
@@ -336,8 +349,10 @@ public class NMap extends NMapActivity {
             }
             this.lon = new String(inlon);
             this.lat = new String(inlat);
+            return true;
         } catch (Exception e) {
             System.out.println("위도 경로 불러오기"+e.toString());
+            return false;
         }
     }
 }

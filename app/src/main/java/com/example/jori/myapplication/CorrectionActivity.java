@@ -83,6 +83,17 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
 //        userInput = (EditText)findViewById(R.id.company_name);
         new BigAdapterTask().execute();
         resultView = (ListView) findViewById(R.id.result_view);
+        resultView.setOnItemClickListener(new resultViewListener());
+    }
+
+    public class resultViewListener implements ListView.OnItemClickListener{
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Intent intent = new Intent(CorrectionActivity.this,NMap.class);
+            intent.putExtra("Result",results.get(position));
+            startActivity(intent);
+        }
     }
 
     public class searchButtonListener implements View.OnClickListener {
@@ -427,33 +438,6 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
         }
     }
 
-    private class ResultData {
-        //검색을 통해 얻어진 데이터의 정보를 저장하고 있을 클래스
-        private String companyName;
-        private String addr;
-        private String accreditNumber;
-
-        private boolean check = false;
-
-        public ResultData(String companyName,String addr,String accreditNumber){
-            this.companyName = companyName;
-            this.addr = addr;
-            this.accreditNumber = accreditNumber;
-        }
-
-        public void setCheck(){ check = !check; }
-        public boolean getCheck(){ return check; }
-        public String getAccreditNumber() { return accreditNumber+"\n"; }
-        public String getCompanyName(){
-            return companyName+"\n";
-        }
-        public String getData(){
-            return accreditNumber + "\n" + companyName + "\n" + addr +"\n";
-        }
-        public String getAddr(){
-            return addr+"\n";
-        }
-    }
     public class SmallData{
         String smallName;
         String smallId;
@@ -640,10 +624,11 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
                 injson = injArr.getJSONObject(j);
                 String companyName = injson.getString("company");
                 //System.out.println(middleName);
-                String addr = injson.getString("delegateaddr");
+                String addr = injson.getString("corporateaddr");
                 String accreditNumber = injson.getString("accreditnumber");
+                String phoneNumber = injson.getString("delegatephone");
 //                System.out.println(companyName + addr + accreditNumber);
-                results.add(new ResultData(companyName, addr, accreditNumber));
+                results.add(new ResultData(companyName, addr, accreditNumber,phoneNumber));
 
             }
         } catch (Exception e){
