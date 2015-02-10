@@ -25,4 +25,5 @@ dependencies {
     compile files('C:/Users/Administrator/AndroidStudioProjects/KSearch-android/libs/nmaps.jar')
     compile files('C:/Users/admin/AndroidStudioProjects/KSearch-android/libs/nmaps.jar')
     compile files('C:/Users/Jori/Documents/GitHub/KSearch-android/libs/nmaps.jar')
+    compile project(':googlemap')
 }
