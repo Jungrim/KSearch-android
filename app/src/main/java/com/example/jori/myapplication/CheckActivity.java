@@ -85,7 +85,7 @@ public class CheckActivity extends ActionBarActivity {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Intent intent = new Intent(CheckActivity.this,NMap.class);
+            Intent intent = new Intent(CheckActivity.this,ResultActivity.class);
             intent.putExtra("Result",results.get(position));
             startActivity(intent);
         }

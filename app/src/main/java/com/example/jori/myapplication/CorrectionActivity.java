@@ -629,6 +629,7 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
                 String accreditNumber = injson.getString("accreditnumber");
                 String phoneNumber = injson.getString("delegatephone");
 //                System.out.println(companyName + addr + accreditNumber);
+
                 results.add(new ResultData(companyName, addr, accreditNumber,phoneNumber,check));
 
             }
