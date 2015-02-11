@@ -623,12 +623,13 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
                 //생성된 ResultData객체를 results벡터에 저장
                 injson = injArr.getJSONObject(j);
                 String companyName = injson.getString("company");
+                Boolean check = false;
                 //System.out.println(middleName);
                 String addr = injson.getString("corporateaddr");
                 String accreditNumber = injson.getString("accreditnumber");
                 String phoneNumber = injson.getString("delegatephone");
 //                System.out.println(companyName + addr + accreditNumber);
-                results.add(new ResultData(companyName, addr, accreditNumber,phoneNumber));
+                results.add(new ResultData(companyName, addr, accreditNumber,phoneNumber,check));
 
             }
         } catch (Exception e){
