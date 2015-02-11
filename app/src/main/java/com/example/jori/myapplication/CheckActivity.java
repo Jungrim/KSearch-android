@@ -580,7 +580,7 @@ public class CheckActivity extends ActionBarActivity {
                 }
                 result.close();
                 //System.out.println(middleName);
-                String addr = injson.getString("corporateaddr");
+                String addr = injson.getString("delegateaddr");
                 String accreditNumber = injson.getString("accreditnumber");
                 String phoneNumber = injson.getString("delegatephone");
 //                System.out.println(companyName + addr + accreditNumber);
