@@ -81,8 +81,18 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
 //        userInput = (EditText)findViewById(R.id.company_name);
         new BigAdapterTask().execute();
         resultView = (ListView) findViewById(R.id.result_view);
+        resultView.setOnItemClickListener(new resultViewListener());
     }
 
+    public class resultViewListener implements ListView.OnItemClickListener{
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Intent intent = new Intent(MaterialActivity.this,ResultActivity.class);
+            intent.putExtra("Result",results.get(position));
+            startActivity(intent);
+        }
+    }
     public class searchButtonListener implements View.OnClickListener {
         public void onClick(View v){
             //Toast.makeText(getApplicationContext(), selectBigname+selectMiddlename, Toast.LENGTH_SHORT).show();
@@ -400,14 +410,6 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
                     middleidList[j+1] = middleId;
                     middleList[j+1] = middleName;
                 }
-
-//                StringTokenizer middleNameSt = new StringTokenizer(middleStr,",");
-//                int i = 1;
-//                while(middleNameSt.hasMoreTokens()){
-//                    String tmpName = middleNameSt.nextToken();
-//                    System.out.println(tmpName);
-//                    middleList[i++] = new String(tmpName);
-//                }
             } catch (Exception e){
                 return;
             }
@@ -426,33 +428,6 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
         }
     }
 
-    private class ResultData {
-        //검색을 통해 얻어진 데이터의 정보를 저장하고 있을 클래스
-        private String companyName;
-        private String addr;
-        private String accreditNumber;
-
-        private boolean check = false;
-
-        public ResultData(String companyName,String addr,String accreditNumber){
-            this.companyName = companyName;
-            this.addr = addr;
-            this.accreditNumber = accreditNumber;
-        }
-
-        public void setCheck(){ check = !check; }
-        public boolean getCheck(){ return check; }
-        public String getAccreditNumber() { return accreditNumber+"\n"; }
-        public String getCompanyName(){
-            return companyName+"\n";
-        }
-        public String getData(){
-            return accreditNumber + "\n" + companyName + "\n" + addr +"\n";
-        }
-        public String getAddr(){
-            return addr+"\n";
-        }
-    }
     public class SmallData{
         String smallName;
         String smallId;
@@ -470,6 +445,7 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
             return smallId;
         }
     }
+
     public void makeSmallList(){
         //API URL로 부터 bigId와 middleId를 통해 smallList를 만든다
         String serviceUrl = "http://ibtk.kr/standardMaterialCategories_api/";
@@ -657,11 +633,13 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
                         //생성된 ResultData객체를 results벡터에 저장
                         injson = injArr.getJSONObject(i);
                         String companyName = injson.getString("company");
-                        //System.out.println(middleName);
                         String addr = injson.getString("delegateaddr");
                         String accreditNumber = injson.getString("accreditnumber");
-//                System.out.println(companyName + addr + accreditNumber);
-                        results.add(new ResultData(companyName, addr, accreditNumber));
+                        String phoneNumber = injson.getString("delegatephone");
+                        String chargeName = injson.getString("chargename");
+                        String rangePower = injson.getString("rangepower");
+
+                        results.add(new com.example.jori.myapplication.ResultData(companyName, addr, accreditNumber,phoneNumber,chargeName,rangePower,false));
 
                     }
                 } catch (Exception e){

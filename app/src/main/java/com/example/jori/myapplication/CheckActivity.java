@@ -77,8 +77,6 @@ public class CheckActivity extends ActionBarActivity {
 
         dbAdapter = new NotesDbAdapter(this);
         dbAdapter.open();
-
-
     }
 
     public class resultViewListener implements ListView.OnItemClickListener{
@@ -583,9 +581,10 @@ public class CheckActivity extends ActionBarActivity {
                 String addr = injson.getString("delegateaddr");
                 String accreditNumber = injson.getString("accreditnumber");
                 String phoneNumber = injson.getString("delegatephone");
-//                System.out.println(companyName + addr + accreditNumber);
-                results.add(new ResultData(companyName, addr, accreditNumber,phoneNumber,check));
+                String chargeName = injson.getString("chargename");
+                String rangePower = injson.getString("rangepower");
 
+                results.add(new ResultData(companyName, addr, accreditNumber,phoneNumber,chargeName,rangePower,check));
             }
         } catch (Exception e){
             System.out.println("makeQuery" + e.toString());

@@ -65,8 +65,18 @@ public class ExamActivity extends ActionBarActivity implements NavigationDrawerF
         userInput = (EditText)findViewById(R.id.company_name);
         new BigAdapterTask().execute();
         resultView = (ListView) findViewById(R.id.result_view);
+        resultView.setOnItemClickListener(new resultViewListener());
     }
 
+    public class resultViewListener implements ListView.OnItemClickListener{
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Intent intent = new Intent(ExamActivity.this,ResultActivity.class);
+            intent.putExtra("Result",results.get(position));
+            startActivity(intent);
+        }
+    }
     public class searchButtonListener implements View.OnClickListener {
         public void onClick(View v){
             //Toast.makeText(getApplicationContext(), selectBigname+selectMiddlename, Toast.LENGTH_SHORT).show();
@@ -288,111 +298,88 @@ public class ExamActivity extends ActionBarActivity implements NavigationDrawerF
         }
     }
 
-    private class BigMiddleConnect{
-        //대분류와 그에 해당하는 세부분야들을 갖고 있으며 get메소드들과 set메소드를 통해
-        //대분류에 해당하는 세부분야를 만들고, 원하는 Data를 리턴해준다.
-        private String bigId;
-        private String bigname;
-        private String[] middleList;
-        private String[] middleidList;
-        private String middleStr = "";
-        private String middleidStr = "";
-
-        public BigMiddleConnect(String bigname,String bigId){
-            //인자로 받는 bigname과 bigId를 통해 생성
-            this.bigname = bigname;
-            this.bigId = bigId;
-        }
-
-        public void setMiddleList() {
-            //현재 객체의 bigId를 통해서 현재 객체의 대분류에 해당하는 세부분야의 쿼리문을 작성하고
-            //스트링 리스트로 저장
-            String inserviceUrl = "http://ibtk.kr/examAdmitDetail_api/";
-            String inserviceKey = "790f112628bf15b344699602ef729cb1?";
-            String query = "model_query_pageable.enable=true&model_query_distinct=middlename&model_query={\"bigid\":\"" + this.bigId + "\"}";
-            String instrUrl = inserviceUrl + inserviceKey + query;
-            if(this.bigname.equals("인정분야")){
-                middleList = new String[1];
-                middleidList = new String[1];
-                middleidList[0] = new String("-1");
-                middleList[0] = new String("세부분야");
-                return;
-            }
-            try {
-                String inline = getDataFromUrl(instrUrl);
-                JSONObject injson = new JSONObject(inline);
-                JSONArray injArr = injson.getJSONArray("content");
-//                middleList = new String[injArr.length()];
-
-                for (int j = 0; j < injArr.length(); j++) {
-                    injson = injArr.getJSONObject(j);
-                    String middleName = injson.getString("middlename");
-                    String middleId = injson.getString("middleid");
-                    //System.out.println(middleName);
-                    if(middleName.length() ==0)
-                        continue;
-                    middleStr = middleStr + middleName + ",";
-                    middleidStr = middleidStr + middleId + ",";
-                }
-                //쿼리문에서 얻어온 데이터에서 세부분야의 이름이 빈칸으로 되어있는 부분이 있기 떄문에
-                //해당 부분을 삭제하기 위해 StringTokenizer를 사용한다.
-                StringTokenizer middleNameSt = new StringTokenizer(middleStr,",");
-                StringTokenizer middleIdSt = new StringTokenizer(middleidStr,",");
-                middleList = new String[middleNameSt.countTokens()+1];
-                middleList[0] = new String("세부분야");
-                middleidList = new String[middleIdSt.countTokens()+1];
-                middleidList[0] = new String("-1");
-                int i = 1;
-                while(middleNameSt.hasMoreTokens()){
-                    String tmpName = middleNameSt.nextToken();
-                    String tmpId = middleIdSt.nextToken();
-                    middleidList[i] = new String(tmpId);
-                    middleList[i++] = new String(tmpName);
-                }
-            } catch (Exception e){
-                return;
-                //return "middleList" + e.toString();
-            }
-        }
-
-        public String getBigname(){
-            return bigname;
-        }
-        public String getMiddleId(int id) { return middleidList[id];}
-        public String[] getMiddleList(){
-            return middleList;
-        }
-
-        public String getBigId(){
-            return bigId;
-        }
-    }
-
-    private class ResultData {
-        //검색을 통해 얻어진 데이터의 정보를 저장하고 있을 클래스
-        private String companyName;
-        private String addr;
-        private String accreditNumber;
-        private boolean check = false;
-
-        public ResultData(String companyName,String addr,String accreditNumber){
-            this.companyName = companyName;
-            this.addr = addr;
-            this.accreditNumber = accreditNumber;
-        }
-        public void setCheck(){ check = !check; }
-        public boolean getCheck(){ return check; }
-        public String getCompanyName(){
-            return companyName+"\n";
-        }
-        public String getAccreditNumber() { return accreditNumber+"\n"; }
-        public String getData(){
-            return accreditNumber + "\n" + companyName + "\n" + addr +"\n";
-        }
-        public String getAddr(){
-            return addr+"\n";
-        }
-    }
+//    private class BigMiddleConnect{
+//        //대분류와 그에 해당하는 세부분야들을 갖고 있으며 get메소드들과 set메소드를 통해
+//        //대분류에 해당하는 세부분야를 만들고, 원하는 Data를 리턴해준다.
+//        private String bigId;
+//        private String bigname;
+//        private String[] middleList;
+//        private String[] middleidList;
+//        private String middleStr = "";
+//        private String middleidStr = "";
+//        private String serviceUrl;
+//        private String serviceKey;
+//        public BigMiddleConnect(String bigname,String bigId,String url,String key){
+//            //인자로 받는 bigname과 bigId를 통해 생성
+//            this.bigname = bigname;
+//            this.bigId = bigId;
+//            this.serviceUrl = url;
+//            this.serviceKey = key;
+//        }
+//
+//        public void setMiddleList() {
+//            //현재 객체의 bigId를 통해서 현재 객체의 대분류에 해당하는 세부분야의 쿼리문을 작성하고
+////            //스트링 리스트로 저장
+////            String inserviceUrl = "http://ibtk.kr/examAdmitDetail_api/";
+////            String inserviceKey = "790f112628bf15b344699602ef729cb1?";
+//            String query = "model_query_pageable.enable=true&model_query_distinct=middlename&model_query={\"bigid\":\"" + this.bigId + "\"}";
+//            String instrUrl = serviceUrl + serviceKey + query;
+//            if(this.bigname.equals("인정분야")){
+//                middleList = new String[1];
+//                middleidList = new String[1];
+//                middleidList[0] = new String("-1");
+//                middleList[0] = new String("세부분야");
+//                return;
+//            }
+//            try {
+//                String inline = getDataFromUrl(instrUrl);
+//                JSONObject injson = new JSONObject(inline);
+//                JSONArray injArr = injson.getJSONArray("content");
+////                middleList = new String[injArr.length()];
+//
+//                for (int j = 0; j < injArr.length(); j++) {
+//                    injson = injArr.getJSONObject(j);
+//                    String middleName = injson.getString("middlename");
+//                    String middleId = injson.getString("middleid");
+//                    //System.out.println(middleName);
+//                    if(middleName.length() ==0)
+//                        continue;
+//                    middleStr = middleStr + middleName + ",";
+//                    middleidStr = middleidStr + middleId + ",";
+//                }
+//                //쿼리문에서 얻어온 데이터에서 세부분야의 이름이 빈칸으로 되어있는 부분이 있기 떄문에
+//                //해당 부분을 삭제하기 위해 StringTokenizer를 사용한다.
+//                StringTokenizer middleNameSt = new StringTokenizer(middleStr,",");
+//                StringTokenizer middleIdSt = new StringTokenizer(middleidStr,",");
+//                middleList = new String[middleNameSt.countTokens()+1];
+//                middleList[0] = new String("세부분야");
+//                middleidList = new String[middleIdSt.countTokens()+1];
+//                middleidList[0] = new String("-1");
+//                int i = 1;
+//                while(middleNameSt.hasMoreTokens()){
+//                    String tmpName = middleNameSt.nextToken();
+//                    String tmpId = middleIdSt.nextToken();
+//                    middleidList[i] = new String(tmpId);
+//                    middleList[i++] = new String(tmpName);
+//                }
+//            } catch (Exception e){
+//                return;
+//                //return "middleList" + e.toString();
+//            }
+//        }
+//
+//        public String getBigname(){
+//            return bigname;
+//        }
+//        public String getMiddleId(int id) { return middleidList[id];}
+//        public String[] getMiddleList(){
+//            return middleList;
+//        }
+//
+//        public String getBigId(){
+//            return bigId;
+//        }
+//    }
 
     public void makeDataList() {
         //API URL로 부터 bigname을 가져와서 bigList에 입력
@@ -401,6 +388,9 @@ public class ExamActivity extends ActionBarActivity implements NavigationDrawerF
         String query = "model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"bigname\",direction:1}]}&model_query_distinct=bigid";
         String strUrl = serviceUrl + serviceKey + query;
 
+        String inserviceUrl = "http://ibtk.kr/examAdmitDetail_api/";
+        String inserviceKey = "790f112628bf15b344699602ef729cb1?";
+
         try {
             String line = getDataFromUrl(strUrl);
             JSONObject json = new JSONObject(line);
@@ -408,7 +398,7 @@ public class ExamActivity extends ActionBarActivity implements NavigationDrawerF
             bigList = new String[jArr.length()+1];
             bigList[0] = new String("인정분야");
             dataList = new BigMiddleConnect[jArr.length()+1];
-            dataList[0] = new BigMiddleConnect("인정분야","-1");
+            dataList[0] = new BigMiddleConnect("인정분야","-1",inserviceUrl,inserviceKey);
             for (int i = 0; i < jArr.length()+1; i++) {
                 //JSONArray jARR로 부터 bigname과 bigid에 해당하는 data를 읽어옴
                 json = jArr.getJSONObject(i);
@@ -416,7 +406,7 @@ public class ExamActivity extends ActionBarActivity implements NavigationDrawerF
                 String bigId = json.getString("bigid");
                 bigList[i+1] = new String(bigName);
                 System.out.println(bigList[i+1]);
-                dataList[i+1] = new BigMiddleConnect(bigName,bigId);
+                dataList[i+1] = new BigMiddleConnect(bigName,bigId,inserviceUrl,inserviceKey);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -561,11 +551,13 @@ public class ExamActivity extends ActionBarActivity implements NavigationDrawerF
                 //생성된 ResultData객체를 results벡터에 저장
                 injson = injArr.getJSONObject(j);
                 String companyName = injson.getString("company");
-                //System.out.println(middleName);
                 String addr = injson.getString("delegateaddr");
                 String accreditNumber = injson.getString("accreditnumber");
-//                System.out.println(companyName + addr + accreditNumber);
-                results.add(new ResultData(companyName, addr, accreditNumber));
+                String phoneNumber = injson.getString("delegatephone");
+                String chargeName = injson.getString("chargename");
+                String rangePower = injson.getString("rangepower");
+
+                results.add(new ResultData(companyName, addr, accreditNumber,phoneNumber,chargeName,rangePower,false));
 
             }
         } catch (Exception e){

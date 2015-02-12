@@ -3,6 +3,7 @@ package com.example.jori.myapplication;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
@@ -13,6 +14,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.MapFragment;
@@ -56,10 +59,12 @@ import java.util.Locale;
  * Created by admin on 2015-02-11.
  */
 public class ResultActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks  {
-    String lat, lon;
+    String lat;
+    String lon;
     String address;
     GoogleMap mMap;
     ResultData result;
+    TextView data;
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,8 +81,13 @@ public class ResultActivity extends ActionBarActivity implements NavigationDrawe
         UiSettings uiSettings = mMap.getUiSettings();
         uiSettings.setZoomControlsEnabled(true);
 
+        data = (TextView)findViewById(R.id.resultData);
+        data.setTextColor(Color.BLACK);
+        data.setTextSize(16);
+        data.setText(setResultData());
+
     }
-    private class ResultTask extends AsyncTask<String, String, Void> {
+    private class ResultTask extends AsyncTask<String, String, Boolean> {
         //검색 버튼 누를시에 작동하는 AsyncTask로 resultData를 만든다.
 //        ArrayAdapter<String> resultAdapter;
         private ArrayList<InfoClass> infoList;
@@ -95,22 +105,40 @@ public class ResultActivity extends ActionBarActivity implements NavigationDrawe
             super.onPreExecute();
         }
 
-        protected Void doInBackground(String... args){
-            makeLonLat(args[0]);
-            return null;
+        protected Boolean doInBackground(String... args){
+            if(!makeLonLat(args[0])){
+                return false;
+            }
+            return true;
         }
-        protected void onPostExecute(Void id) {
+        protected void onPostExecute(Boolean jud) {
             dialog.dismiss();
-            float latitudeE6 =  (Float.valueOf(lat));
-            float longitudeE6 =  (Float.valueOf(lon));
-            System.out.println("lat:"+latitudeE6+"lon:"+longitudeE6);
-            LatLng LOC = new LatLng(latitudeE6,longitudeE6);
-            mMap.addMarker(new MarkerOptions().position(LOC).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)).title(result.getCompanyName()));
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LOC, 16));
+            if(!jud){
+                Toast.makeText(getApplicationContext(), "지도에서 찾을 수 없음.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            else {
+                float latitudeE6 = (Float.valueOf(lat));
+                float longitudeE6 = (Float.valueOf(lon));
+                System.out.println("lat:" + latitudeE6 + "lon:" + longitudeE6);
+                LatLng LOC = new LatLng(latitudeE6, longitudeE6);
+                mMap.addMarker(new MarkerOptions().position(LOC).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)).title(result.getCompanyName()));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LOC, 16));
+                return;
+            }
         }
     }
+    private String setResultData(){
+        String data = new String("인증번호 : "+result.getAccreditNumber());
 
-    private void makeLonLat(String query){
+        data = data+"회사이름 : "+result.getCompanyName();
+        data = data+"전화번호 : "+result.getPhoneNumber();
+        data = data+"담당자 : "+result.getChargeName();
+        data = data+"측정능력 : "+result.getRangePower();
+        System.out.println("data : "+data);
+        return data;
+    }
+    private boolean makeLonLat(String query){
         try {
 
             String line = getDataFromUrl(query).toString();
@@ -125,15 +153,17 @@ public class ResultActivity extends ActionBarActivity implements NavigationDrawe
 
                 for(int i=0; i<markers.length(); i++){
                     address = markers.getJSONObject(i).getString("laddr");
-                    lat = markers.getJSONObject(i).getJSONObject("latlng").getString("lat");
-                    lon = markers.getJSONObject(i).getJSONObject("latlng").getString("lng");
+                    lat = new String(markers.getJSONObject(i).getJSONObject("latlng").getString("lat"));
+                    lon = new String(markers.getJSONObject(i).getJSONObject("latlng").getString("lng"));
                     //주소, 위도, 경도 순으로 저장함.
                 }
             } else {
                 System.out.println("No Search Data");
             }
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
     }
     private void makeQuery(String address,String nearAddress){

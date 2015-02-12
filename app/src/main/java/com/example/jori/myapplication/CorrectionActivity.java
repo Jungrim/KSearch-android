@@ -90,7 +90,7 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Intent intent = new Intent(CorrectionActivity.this,NMap.class);
+            Intent intent = new Intent(CorrectionActivity.this,ResultActivity.class);
             intent.putExtra("Result",results.get(position));
             startActivity(intent);
         }
@@ -625,13 +625,13 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
                 String companyName = injson.getString("company");
                 Boolean check = false;
                 //System.out.println(middleName);
-                String addr = injson.getString("corporateaddr");
+                String addr = injson.getString("delegateaddr");
                 String accreditNumber = injson.getString("accreditnumber");
                 String phoneNumber = injson.getString("delegatephone");
-//                System.out.println(companyName + addr + accreditNumber);
+                String chargeName = injson.getString("chargename");
+                String rangePower = injson.getString("rangepower");
 
-                results.add(new ResultData(companyName, addr, accreditNumber,phoneNumber,check));
-
+                results.add(new ResultData(companyName, addr, accreditNumber,phoneNumber,chargeName,rangePower,check));
             }
         } catch (Exception e){
             System.out.println("makeQuery" + e.toString());
