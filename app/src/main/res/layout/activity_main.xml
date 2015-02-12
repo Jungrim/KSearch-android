@@ -7,47 +7,57 @@
     <!-- As the main content view, the view below consumes the entire
          space available using match_parent in both dimensions. -->
     <FrameLayout android:id="@+id/container" android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:background="#00b5b39d"
+        android:clickable="false">
 
         <ImageView
             android:layout_width="330dp"
-            android:layout_height="100dp"
+            android:layout_height="80dp"
             android:id="@+id/imageView"
             android:layout_gravity="center_horizontal|top"
-            android:src="@android:drawable/ic_menu_report_image"
-            android:layout_marginTop="40dp" />
+            android:layout_marginTop="20dp"
+            android:background="@drawable/kolas" />
 
         <ImageButton
             android:layout_width="330dp"
-            android:layout_height="100dp"
+            android:layout_height="80dp"
             android:id="@+id/image_correction"
             android:layout_gravity="center"
-            android:src="@android:drawable/ic_menu_myplaces"
-            android:layout_marginTop="10dp" />
+
+            android:layout_marginTop="10dp"
+            android:background="@drawable/correction" />
 
         <ImageButton
             android:layout_width="330dp"
-            android:layout_height="100dp"
+            android:layout_height="80dp"
             android:id="@+id/image_check"
-            android:src="@android:drawable/sym_call_missed"
             android:layout_gravity="top|center"
-            android:layout_marginTop="145dp" />
+            android:layout_marginTop="155dp"
+            android:baselineAlignBottom="false"
+            android:clickable="false"
+            android:focusable="false"
+            android:background="@drawable/check"
+            style="@style/Base.Widget.AppCompat.ActionButton" />
 
         <ImageButton
             android:layout_width="330dp"
-            android:layout_height="100dp"
+            android:layout_height="80dp"
             android:id="@+id/image_exam"
-            android:src="@drawable/abc_btn_check_to_on_mtrl_000"
+
             android:layout_marginTop="105dp"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:background="@drawable/exam" />
 
         <ImageButton
             android:layout_width="330dp"
-            android:layout_height="100dp"
+
+            android:layout_height="80dp"
             android:id="@+id/image_material"
             android:layout_gravity="center"
-            android:src="@drawable/ic_launcher"
-            android:layout_marginTop="200dp" />
+
+            android:layout_marginTop="200dp"
+            android:background="@drawable/material" />
     </FrameLayout>
 
     <!-- android:layout_gravity="start" tells DrawerLayout to treat
