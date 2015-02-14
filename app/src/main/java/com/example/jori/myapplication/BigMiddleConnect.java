@@ -25,6 +25,7 @@ public class BigMiddleConnect {
     private String middleidStr = "";
     private String serviceUrl;
     private String serviceKey;
+
     public BigMiddleConnect(String bigname,String bigId,String url,String key){
         //인자로 받는 bigname과 bigId를 통해 생성
         this.bigname = bigname;
@@ -83,6 +84,7 @@ public class BigMiddleConnect {
             //return "middleList" + e.toString();
         }
     }
+
     private String getDataFromUrl(String url) throws IOException {
         // HttpURLConnection을 사용해서 주어진 URL에 대한 입력 스트림을 얻는다.
         //얻어진 입력스트림을 한줄씩 읽어서 page에 저장하고 return한다.
@@ -106,6 +108,7 @@ public class BigMiddleConnect {
             conn.disconnect();
         }
     }
+
     public String getBigname(){
         return bigname;
     }

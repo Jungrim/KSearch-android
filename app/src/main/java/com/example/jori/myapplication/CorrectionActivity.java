@@ -60,10 +60,14 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
 
     private ListView resultView;
     private ArrayList<ResultData> results;
+    private HttpUrlConnect urlConnector;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_correction);
+
+        urlConnector = new HttpUrlConnect();
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer_correction);
@@ -106,6 +110,7 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
     }
 
     private class CityItemSelected implements AdapterView.OnItemSelectedListener{
+        private String selectCity;
         @Override
         public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
             String select = (String)citySpinner.getSelectedItem();
@@ -116,12 +121,11 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
                 selectCity = new String(select);
 
             System.out.println(selectCity + selectCity.length());
+
         }
+
         @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-
-        }
-
+        public void onNothingSelected(AdapterView<?> parent) {}
     }
     public class SmallAdapterListener implements  AdapterView.OnItemSelectedListener{
 
@@ -224,7 +228,7 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
                 smallNameList[i++] = new String(tmpData.getSmallName());
                 System.out.println(smallNameList[i-1]);
             }
-            ArrayAdapter smallAdapter = new myAdapter(getApplicationContext(), android.R.layout.simple_spinner_item,smallNameList );
+            ArrayAdapter smallAdapter = new MyArrayAdapter(getApplicationContext(), android.R.layout.simple_spinner_item,smallNameList );
             smallAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
             smallSpinner.setAdapter(smallAdapter);
             smallSpinner.setOnItemSelectedListener(new SmallAdapterListener());
@@ -254,7 +258,7 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
         protected void onPostExecute(Integer id){
             //불러와진 데이터를 통해 어레이어댑터를 만들고
             //미들스피너에 붙이고 로딩창 종료
-            ArrayAdapter middleAdapter = new myAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, dataList[id].getMiddleList());
+            ArrayAdapter middleAdapter = new MyArrayAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, dataList[id].getMiddleList());
             middleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
             middleSpinner.setAdapter(middleAdapter);
             middleSpinner.setOnItemSelectedListener(new MiddleAdapterListener(id));
@@ -311,59 +315,6 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
 
     }
 
-    private class myAdapter extends ArrayAdapter<String> {
-        //스피너에 붙는 어레이 어댑터를 만들때 사용되는 클래스로
-        //어레이어댑터를 상속하고 TextView를 통해서 폰트의 설정을 변경할 수 있다.
-        Context context;
-        String[] items = new String[] {};
-
-        public myAdapter(final Context context,
-                         final int textViewResourceId, final String[] objects) {
-            super(context, textViewResourceId, objects);
-            this.items = objects;
-            this.context = context;
-        }
-        @Override
-        //스피너 클릭시 보여지는 View의 정의
-        public View getDropDownView(int position, View convertView,
-                                    ViewGroup parent) {
-
-            if (convertView == null) {
-                LayoutInflater inflater = LayoutInflater.from(context);
-                convertView = inflater.inflate(
-                        android.R.layout.simple_spinner_dropdown_item, parent, false);
-            }
-
-            TextView tv = (TextView) convertView.findViewById(android.R.id.text1);
-            tv.setText(items[position]);
-            tv.setTextColor(Color.BLACK);
-            tv.setTextSize(15);
-            tv.setHeight(50);
-            return convertView;
-        }
-
-        @Override
-        //기본 스피터 View의 정의
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                LayoutInflater inflater = LayoutInflater.from(context);
-                convertView = inflater.inflate(
-                        android.R.layout.simple_spinner_item, parent, false);
-            }
-
-            TextView tv = (TextView) convertView
-                    .findViewById(android.R.id.text1);
-            tv.setText(items[position]);
-            tv.setText(items[position]);
-            tv.setTextColor(Color.BLACK);
-//            tv.setTextSize(12);
-            tv.setHeight(50);
-
-//            tv.setTextSize(12);
-            return convertView;
-        }
-    }
-
     private class BigMiddleConnect{
         //대분류와 그에 해당하는 세부분야들을 갖고 있으며 get메소드들과 set메소드를 통해
         //대분류에 해당하는 세부분야를 만들고, 원하는 Data를 리턴해준다.
@@ -384,7 +335,7 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
             //현재 객체의 bigId를 통해서 현재 객체의 대분류에 해당하는 세부분야의 쿼리문을 작성하고
             //스트링 리스트로 저장
             String inserviceUrl = "http://ibtk.kr/correctionalClassification_api/";
-            String inserviceKey = "476febb189d2992a63feba63ba5691cb?";
+            String inserviceKey = "bf97ec9be8e86d9ebadebd7f006ba818?";
             String query = "model_query_pageable={enable:true,sortOrders:[{property:\"middleid\",direction:1}]}&model_query_distinct=middleid&model_query={\"bigid\":\"" + this.bigId + "\"}";
             String instrUrl = inserviceUrl + inserviceKey + query;
             if(this.bigname.equals("대분류")){
@@ -398,7 +349,7 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
             middleStr = middlenameList[(Integer.parseInt(this.bigId)-1)];
 
             try {
-                String inline = getDataFromUrl(instrUrl);
+                String inline = urlConnector.getDataFromUrl(instrUrl);
                 JSONObject injson = new JSONObject(inline);
                 JSONArray injArr = injson.getJSONArray("content");
 //                middleList = new String[injArr.length()];
@@ -438,27 +389,10 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
         }
     }
 
-    public class SmallData{
-        String smallName;
-        String smallId;
-
-        public SmallData(String smallName,String smallId){
-            this.smallId = smallId;
-            this.smallName = smallName;
-        }
-
-        public String getSmallName(){
-            return smallName;
-        }
-
-        public String getSmallId(){
-            return smallId;
-        }
-    }
     public void makeSmallList(){
         //API URL로 부터 bigId와 middleId를 통해 smallList를 만든다
         String serviceUrl = "http://ibtk.kr/correctionalClassification_api/";
-        String serviceKey = "476febb189d2992a63feba63ba5691cb?";
+        String serviceKey = "bf97ec9be8e86d9ebadebd7f006ba818?";
         String query = "model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"smallid\",direction:1}]}&model_query_distinct=smallid&model_query={$and:[{\"bigid\":\""+selectBigid+"\"},{\"middleid\":\""+selectMiddleid+"\"}]}";
         String strUrl = serviceUrl + serviceKey + query;
         System.out.println(strUrl);
@@ -470,7 +404,7 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
         }
 
         try {
-            String inline = getDataFromUrl(strUrl);
+            String inline = urlConnector.getDataFromUrl(strUrl);
             System.out.println(inline);
             JSONObject json = new JSONObject(inline);
             JSONArray jArr = json.getJSONArray("content");
@@ -490,12 +424,12 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
     public void makeDataList() {
         //API URL로 부터 bigid을 가져와서 bignameList와 연결해서 bigList에 입력
         String serviceUrl = "http://ibtk.kr/correctionalClassification_api/";
-        String serviceKey = "476febb189d2992a63feba63ba5691cb?";
+        String serviceKey = "bf97ec9be8e86d9ebadebd7f006ba818?";
         String query = "model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"bigid\",direction:1}]}&model_query_distinct=bigid";
         String strUrl = serviceUrl + serviceKey + query;
 
         try {
-            String line = getDataFromUrl(strUrl);
+            String line = urlConnector.getDataFromUrl(strUrl);
             JSONObject json = new JSONObject(line);
             JSONArray jArr = json.getJSONArray("content");
             bigList = new String[jArr.length()+1];
@@ -516,35 +450,11 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
         }
     }
 
-    public String getDataFromUrl(String url) throws IOException {
-        // HttpURLConnection을 사용해서 주어진 URL에 대한 입력 스트림을 얻는다.
-        //얻어진 입력스트림을 한줄씩 읽어서 page에 저장하고 return한다.
-        HttpURLConnection conn = null;
-        System.out.println(url);
-        try {
-            URL u = new URL(url);
-            conn = (HttpURLConnection)u.openConnection();
-            conn.setDoOutput(false);
-            BufferedInputStream buf = new BufferedInputStream(conn.getInputStream());
-            BufferedReader bufreader = new BufferedReader(new InputStreamReader(buf,"utf-8"));
-
-            String line = null;
-            String page = "";
-            while((line = bufreader.readLine()) != null){
-                page += line;
-            }
-            System.out.println(page);
-            return page;
-        } finally{
-            conn.disconnect();
-        }
-    }
-
     public void makeSearchQuery(){
         //검색버튼 클릭시에 작동하는 메소드로 선택된 대분류Id(selectBigid)와 세부분야Id(selectMiddleid)를 통해서
         //API로 부터 해당하는 기관을 찾아준다.
         String searchUrl = "http://ibtk.kr/correctionalInstitutionsDetail_api/";
-        String searchUrlKey = "2e4e5566d93c1eb3d0d51448e2d0422b?";
+        String searchUrlKey = "c40c2656fcdd06180708863c01a3921a?";
         String searchquery = "model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno";
 
         if(selectCity.length() == 0) {
@@ -613,7 +523,7 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
         results = new ArrayList<ResultData>();
 
         try {
-            String inline = getDataFromUrl(instrUrl);
+            String inline = urlConnector.getDataFromUrl(instrUrl);
             System.out.println("line : "+inline);
             JSONObject injson = new JSONObject(inline);
             JSONArray injArr = injson.getJSONArray("content");
@@ -642,7 +552,7 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
 
     public ArrayAdapter setBigAdapter() {
         //bigList를 통해서 어레이 어댑터를 생성하고 리턴해줌
-        ArrayAdapter tmpAdapter = new myAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, bigList);
+        ArrayAdapter tmpAdapter = new MyArrayAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, bigList);
         tmpAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         return tmpAdapter;

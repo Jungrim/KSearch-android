@@ -58,10 +58,14 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
 
     private ListView resultView;
     private ArrayList<ResultData> results;
+    private HttpUrlConnect urlConnector;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_correction);
+
+        urlConnector = new HttpUrlConnect();
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer_correction);
@@ -221,7 +225,7 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
                 smallNameList[i++] = new String(tmpData.getSmallName());
                 System.out.println(smallNameList[i-1]);
             }
-            ArrayAdapter smallAdapter = new myAdapter(getApplicationContext(), android.R.layout.simple_spinner_item,smallNameList );
+            ArrayAdapter smallAdapter = new MyArrayAdapter(getApplicationContext(), android.R.layout.simple_spinner_item,smallNameList );
             smallAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
             smallSpinner.setAdapter(smallAdapter);
             smallSpinner.setOnItemSelectedListener(new SmallAdapterListener());
@@ -251,7 +255,7 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
         protected void onPostExecute(Integer id){
             //불러와진 데이터를 통해 어레이어댑터를 만들고
             //미들스피너에 붙이고 로딩창 종료
-            ArrayAdapter middleAdapter = new myAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, dataList[id].getMiddleList());
+            ArrayAdapter middleAdapter = new MyArrayAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, dataList[id].getMiddleList());
             middleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
             middleSpinner.setAdapter(middleAdapter);
             middleSpinner.setOnItemSelectedListener(new MiddleAdapterListener(id));
@@ -288,16 +292,17 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
             //로딩창을 끝냄.
             bigSpinner.setAdapter(bigAdapter);
             dialog.dismiss();
-            bigSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+            bigSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
-                public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
-                    for(int i=0;i<dataList.length;i++){
-                        if(bigList[position].equals(dataList[i].getBigname())) {
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    for (int i = 0; i < dataList.length; i++) {
+                        if (bigList[position].equals(dataList[i].getBigname())) {
                             new MiddleAdapterTask().execute(i);
                             selectBigid = new String(dataList[i].getBigId());
                         }
                     }
                 }
+
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {
 
@@ -308,148 +313,10 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
 
     }
 
-    private class myAdapter extends ArrayAdapter<String> {
-        //스피너에 붙는 어레이 어댑터를 만들때 사용되는 클래스로
-        //어레이어댑터를 상속하고 TextView를 통해서 폰트의 설정을 변경할 수 있다.
-        Context context;
-        String[] items = new String[] {};
-
-        public myAdapter(final Context context,
-                         final int textViewResourceId, final String[] objects) {
-            super(context, textViewResourceId, objects);
-            this.items = objects;
-            this.context = context;
-        }
-        @Override
-        //스피너 클릭시 보여지는 View의 정의
-        public View getDropDownView(int position, View convertView,
-                                    ViewGroup parent) {
-
-            if (convertView == null) {
-                LayoutInflater inflater = LayoutInflater.from(context);
-                convertView = inflater.inflate(
-                        android.R.layout.simple_spinner_dropdown_item, parent, false);
-            }
-
-            TextView tv = (TextView) convertView.findViewById(android.R.id.text1);
-            tv.setText(items[position]);
-            tv.setTextColor(Color.BLACK);
-            tv.setTextSize(15);
-            tv.setHeight(50);
-            return convertView;
-        }
-
-        @Override
-        //기본 스피터 View의 정의
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                LayoutInflater inflater = LayoutInflater.from(context);
-                convertView = inflater.inflate(
-                        android.R.layout.simple_spinner_item, parent, false);
-            }
-
-            TextView tv = (TextView) convertView
-                    .findViewById(android.R.id.text1);
-            tv.setText(items[position]);
-            tv.setText(items[position]);
-            tv.setTextColor(Color.BLACK);
-//            tv.setTextSize(12);
-            tv.setHeight(50);
-
-//            tv.setTextSize(12);
-            return convertView;
-        }
-    }
-
-    private class BigMiddleConnect{
-        //대분류와 그에 해당하는 세부분야들을 갖고 있으며 get메소드들과 set메소드를 통해
-        //대분류에 해당하는 세부분야를 만들고, 원하는 Data를 리턴해준다.
-        private String bigId;
-        private String bigname;
-        private String[] middleList;
-        private String[] middleidList;
-        private String middleStr = "";
-        private String[] smallList;
-        private String[] smallidList;
-
-        public BigMiddleConnect(String bigname,String bigId){
-            //인자로 받는 bigname과 bigId를 통해 생성
-            this.bigname = bigname;
-            this.bigId = bigId;
-        }
-        public void setMiddleList() {
-            //현재 객체의 bigId를 통해서 현재 객체의 대분류에 해당하는 세부분야의 쿼리문을 작성하고
-            //스트링 리스트로 저장
-            String inserviceUrl = "http://ibtk.kr/standardMaterialDetailSearch_api/";
-            String inserviceKey = "e4dbdacb183f795c17a408644fd60524?";
-            String query = "model_query_pageable={enable:true,sortOrders:[{property:\"middleid\",direction:1}]}&model_query_distinct=middleid&model_query={\"bigid\":\"" + this.bigId + "\"}";
-            String instrUrl = inserviceUrl + inserviceKey + query;
-            if(this.bigname.equals("대분류")){
-                middleList = new String[1];
-                middleidList = new String[1];
-                middleidList[0] = new String("-1");
-                middleList[0] = new String("중분류");
-                return;
-            }
-
-
-            try {
-                String inline = getDataFromUrl(instrUrl);
-                JSONObject injson = new JSONObject(inline);
-                JSONArray injArr = injson.getJSONArray("content");
-//                middleList = new String[injArr.length()];
-                middleidList = new String[injArr.length()+1];
-                middleList = new String[injArr.length()+1];
-                middleList[0] = new String("중분류");
-                middleidList[0] = new String("-1");
-                for (int j = 0; j < injArr.length(); j++) {
-                    injson = injArr.getJSONObject(j);
-                    String middleId = injson.getString("middleid");
-                    String middleName = injson.getString("middlename");
-                    //System.out.println(middleName);
-                    middleidList[j+1] = middleId;
-                    middleList[j+1] = middleName;
-                }
-            } catch (Exception e){
-                return;
-            }
-        }
-
-        public String getBigname(){
-            return bigname;
-        }
-        public String getMiddleId(int id) { return middleidList[id];}
-        public String[] getMiddleList(){
-            return middleList;
-        }
-
-        public String getBigId(){
-            return bigId;
-        }
-    }
-
-    public class SmallData{
-        String smallName;
-        String smallId;
-
-        public SmallData(String smallName,String smallId){
-            this.smallId = smallId;
-            this.smallName = smallName;
-        }
-
-        public String getSmallName(){
-            return smallName;
-        }
-
-        public String getSmallId(){
-            return smallId;
-        }
-    }
-
     public void makeSmallList(){
         //API URL로 부터 bigId와 middleId를 통해 smallList를 만든다
         String serviceUrl = "http://ibtk.kr/standardMaterialCategories_api/";
-        String serviceKey = "9c534af12fd5b65a91742d058aa86a09?";
+        String serviceKey = "b8ec9e277c178992d1e30adbdefa4295?";
         String query = "model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"smallid\",direction:1}]}&model_query_distinct=smallid&model_query={$and:[{\"bigid\":\""+selectBigid+"\"},{\"middleid\":\""+selectMiddleid+"\"}]}";
         String strUrl = serviceUrl + serviceKey + query;
         System.out.println(strUrl);
@@ -461,7 +328,7 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
         }
 
         try {
-            String inline = getDataFromUrl(strUrl);
+            String inline = urlConnector.getDataFromUrl(strUrl);
             System.out.println(inline);
             JSONObject json = new JSONObject(inline);
             JSONArray jArr = json.getJSONArray("content");
@@ -478,21 +345,22 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
         }
 
     }
+
     public void makeDataList() {
         //API URL로 부터 bigid을 가져와서 bignameList와 연결해서 bigList에 입력
         String serviceUrl = "http://ibtk.kr/standardMaterialDetailSearch_api/";
-        String serviceKey = "e4dbdacb183f795c17a408644fd60524?";
+        String serviceKey = "cb0b2b73d22b4a00a9c5504901aa9fe0?";
         String query = "model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"bigid\",direction:1}]}&model_query_distinct=bigid";
         String strUrl = serviceUrl + serviceKey + query;
 
         try {
-            String line = getDataFromUrl(strUrl);
+            String line = urlConnector.getDataFromUrl(strUrl);
             JSONObject json = new JSONObject(line);
             JSONArray jArr = json.getJSONArray("content");
             bigList = new String[jArr.length()+1];
             bigList[0] = new String("대분류");
             dataList = new BigMiddleConnect[jArr.length()+1];
-            dataList[0] = new BigMiddleConnect("대분류","-1");
+            dataList[0] = new BigMiddleConnect("대분류","-1",serviceUrl,serviceKey);
             for (int i = 0; i < jArr.length()+1; i++) {
                 //JSONArray jARR로 부터 bigname과 bigid에 해당하는 data를 읽어옴
                 json = jArr.getJSONObject(i);
@@ -500,34 +368,10 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
                 String bigName = json.getString("bigname");
                 bigList[i+1] = new String(bigName);
                 System.out.println(bigList[i+1]);
-                dataList[i+1] = new BigMiddleConnect(bigName,bigId);
+                dataList[i+1] = new BigMiddleConnect(bigName,bigId,serviceUrl,serviceKey);
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    public String getDataFromUrl(String url) throws IOException {
-        // HttpURLConnection을 사용해서 주어진 URL에 대한 입력 스트림을 얻는다.
-        //얻어진 입력스트림을 한줄씩 읽어서 page에 저장하고 return한다.
-        HttpURLConnection conn = null;
-        System.out.println(url);
-        try {
-            URL u = new URL(url);
-            conn = (HttpURLConnection)u.openConnection();
-            conn.setDoOutput(false);
-            BufferedInputStream buf = new BufferedInputStream(conn.getInputStream());
-            BufferedReader bufreader = new BufferedReader(new InputStreamReader(buf,"utf-8"));
-
-            String line = null;
-            String page = "";
-            while((line = bufreader.readLine()) != null){
-                page += line;
-            }
-            System.out.println(page);
-            return page;
-        } finally{
-            conn.disconnect();
         }
     }
 
@@ -535,7 +379,7 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
         //검색버튼 클릭시에 작동하는 메소드로 선택된 대분류Id(selectBigid)와 세부분야Id(selectMiddleid)를 통해서
         //API로 부터 해당하는 기관을 찾아준다.
         String searchUrl = "http://ibtk.kr/standardMaterialAgencies_api/";
-        String searchUrlKey = "67dabdf02b38075094a7efad6a3d3c0f?";
+        String searchUrlKey = "e176ac6741fd7bb2ce7507368d8818fb?";
         String searchquery = "model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno";
         String[] companynoList;
 
@@ -605,7 +449,7 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
         results = new ArrayList<ResultData>();
 
         try {
-            String line = getDataFromUrl(strUrl);
+            String line = urlConnector.getDataFromUrl(strUrl);
             System.out.println("line : "+line);
             JSONObject json = new JSONObject(line);
             JSONArray jArr = json.getJSONArray("content");
@@ -619,11 +463,11 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
                 companynoList[j] = new String(companyNo);
                 try {
                     String insearchUrl = "http://ibtk.kr/standardMaterialAgenciesDetail_api/";
-                    String insearchUrlKey = "37c729e87469e3be06ac212ebde7dc9a?";
+                    String insearchUrlKey = "efb8b2c1d5c397733701cfed51f77308?";
                     String insearchquery = "model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno&model_query={\"companyno\":\""+companyNo+"\"}";
                     String instrUrl = insearchUrl + insearchUrlKey + insearchquery;
 
-                    String inline = getDataFromUrl(instrUrl);
+                    String inline = urlConnector.getDataFromUrl(instrUrl);
                     System.out.println("line : "+inline);
                     JSONObject injson = new JSONObject(inline);
                     JSONArray injArr = injson.getJSONArray("content");
@@ -658,7 +502,7 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
 
     public ArrayAdapter setBigAdapter() {
         //bigList를 통해서 어레이 어댑터를 생성하고 리턴해줌
-        ArrayAdapter tmpAdapter = new myAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, bigList);
+        ArrayAdapter tmpAdapter = new MyArrayAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, bigList);
         tmpAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         return tmpAdapter;

@@ -58,12 +58,14 @@ public class CheckActivity extends ActionBarActivity {
     private EditText userInput;
     private Spinner citySpinner;
     private NotesDbAdapter dbAdapter;
+    private HttpUrlConnect urlConnector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check);
 
+        urlConnector = new HttpUrlConnect();
         bigSpinner = (Spinner)findViewById(R.id.big_spinner);
         middleSpinner = (Spinner)findViewById(R.id.middle_spinner);
         citySpinner = (Spinner)findViewById(R.id.city_spinner);
@@ -182,7 +184,7 @@ public class CheckActivity extends ActionBarActivity {
         protected void onPostExecute(Integer id){
             //불러와진 데이터를 통해 어레이어댑터를 만들고
             //미들스피너에 붙이고 로딩창 종료
-            ArrayAdapter middleAdapter = new myAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, dataList[id].getMiddleList());
+            ArrayAdapter middleAdapter = new MyArrayAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, dataList[id].getMiddleList());
             middleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
             middleSpinner.setAdapter(middleAdapter);
             middleSpinner.setOnItemSelectedListener(new MiddleAdapterListener(id));
@@ -256,155 +258,22 @@ public class CheckActivity extends ActionBarActivity {
         }
 
     }
-    private class myAdapter extends ArrayAdapter<String> {
-        //스피너에 붙는 어레이 어댑터를 만들때 사용되는 클래스로
-        //어레이어댑터를 상속하고 TextView를 통해서 폰트의 설정을 변경할 수 있다.
-        Context context;
-        String[] items = new String[] {};
-
-        public myAdapter(final Context context,
-                         final int textViewResourceId, final String[] objects) {
-            super(context, textViewResourceId, objects);
-            this.items = objects;
-            this.context = context;
-        }
-        @Override
-        //스피너 클릭시 보여지는 View의 정의
-        public View getDropDownView(int position, View convertView,
-                                    ViewGroup parent) {
-
-            if (convertView == null) {
-                LayoutInflater inflater = LayoutInflater.from(context);
-                convertView = inflater.inflate(
-                        android.R.layout.simple_spinner_dropdown_item, parent, false);
-            }
-
-            TextView tv = (TextView) convertView.findViewById(android.R.id.text1);
-            tv.setText(items[position]);
-            tv.setTextColor(Color.BLACK);
-            tv.setTextSize(15);
-            tv.setHeight(50);
-            return convertView;
-        }
-
-        @Override
-        //기본 스피터 View의 정의
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                LayoutInflater inflater = LayoutInflater.from(context);
-                convertView = inflater.inflate(
-                        android.R.layout.simple_spinner_item, parent, false);
-            }
-
-            TextView tv = (TextView) convertView
-                    .findViewById(android.R.id.text1);
-            tv.setText(items[position]);
-            tv.setText(items[position]);
-            tv.setTextColor(Color.BLACK);
-//            tv.setTextSize(15);
-            tv.setHeight(50);
-
-//            tv.setTextSize(12);
-            return convertView;
-        }
-    }
-
-    private class BigMiddleConnect{
-        //대분류와 그에 해당하는 세부분야들을 갖고 있으며 get메소드들과 set메소드를 통해
-        //대분류에 해당하는 세부분야를 만들고, 원하는 Data를 리턴해준다.
-        private String bigId;
-        private String bigname;
-        private String[] middleList;
-        private String[] middleidList;
-        private String middleStr = "";
-        private String middleidStr = "";
-
-        public BigMiddleConnect(String bigname,String bigId){
-            //인자로 받는 bigname과 bigId를 통해 생성
-            this.bigname = bigname;
-            this.bigId = bigId;
-        }
-
-        public void setMiddleList() {
-            //현재 객체의 bigId를 통해서 현재 객체의 대분류에 해당하는 세부분야의 쿼리문을 작성하고
-            //스트링 리스트로 저장
-            String inserviceUrl = "http://ibtk.kr/inspectionAgencyDetail_api/";
-            String inserviceKey = "3f7f0c56c14ad73f3a0534ba2999f4a2?";
-            String query = "model_query_pageable.enable=true&model_query_distinct=middlename&model_query={\"bigid\":\"" + this.bigId + "\"}";
-            String instrUrl = inserviceUrl + inserviceKey + query;
-            if(this.bigname.equals("인정분야")){
-                middleList = new String[1];
-                middleidList = new String[1];
-                middleidList[0] = new String("-1");
-                middleList[0] = new String("세부분야");
-                return;
-            }
-            try {
-                String inline = getDataFromUrl(instrUrl);
-                JSONObject injson = new JSONObject(inline);
-                JSONArray injArr = injson.getJSONArray("content");
-//                middleList = new String[injArr.length()];
-
-                for (int j = 0; j < injArr.length(); j++) {
-                    injson = injArr.getJSONObject(j);
-                    String middleName = injson.getString("middlename");
-                    String middleId = injson.getString("middleid");
-                    //System.out.println(middleName);
-                    if(middleName.length() ==0)
-                        continue;
-                    middleStr = middleStr + middleName + ",";
-                    middleidStr = middleidStr + middleId + ",";
-                }
-                //쿼리문에서 얻어온 데이터에서 세부분야의 이름이 빈칸으로 되어있는 부분이 있기 떄문에
-                //해당 부분을 삭제하기 위해 StringTokenizer를 사용한다.
-                StringTokenizer middleNameSt = new StringTokenizer(middleStr,",");
-                StringTokenizer middleIdSt = new StringTokenizer(middleidStr,",");
-                middleList = new String[middleNameSt.countTokens()+1];
-                middleList[0] = new String("세부분야");
-                middleidList = new String[middleIdSt.countTokens()+1];
-                middleidList[0] = new String("-1");
-                int i = 1;
-                while(middleNameSt.hasMoreTokens()){
-                    String tmpName = middleNameSt.nextToken();
-                    String tmpId = middleIdSt.nextToken();
-                    middleidList[i] = new String(tmpId);
-                    middleList[i++] = new String(tmpName);
-                }
-            } catch (Exception e){
-                return;
-                //return "middleList" + e.toString();
-            }
-        }
-
-        public String getBigname(){
-            return bigname;
-        }
-        public String getMiddleId(int id) { return middleidList[id];}
-        public String[] getMiddleList(){
-            return middleList;
-        }
-
-        public String getBigId(){
-            return bigId;
-        }
-    }
-
 
     public void makeDataList() {
         //API URL로 부터 bigname을 가져와서 bigList에 입력
         String serviceUrl = "http://ibtk.kr/inspectionRecognize_api/";
-        String serviceKey = "48744e4796989e49eef86081ab416116?";
+        String serviceKey = "3a62fce54ed12d5e45d9c11b76b0ab36?";
         String query = "model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"bigname\",direction:1}]}&model_query_distinct=bigid";
         String strUrl = serviceUrl + serviceKey + query;
 
         try {
-            String line = getDataFromUrl(strUrl);
+            String line = urlConnector.getDataFromUrl(strUrl);
             JSONObject json = new JSONObject(line);
             JSONArray jArr = json.getJSONArray("content");
             bigList = new String[jArr.length()+1];
             bigList[0] = new String("인정분야");
             dataList = new BigMiddleConnect[jArr.length()+1];
-            dataList[0] = new BigMiddleConnect("인정분야","-1");
+            dataList[0] = new BigMiddleConnect("인정분야","-1",serviceUrl,serviceKey);
             for (int i = 0; i < jArr.length()+1; i++) {
                 //JSONArray jARR로 부터 bigname과 bigid에 해당하는 data를 읽어옴
                 json = jArr.getJSONObject(i);
@@ -412,34 +281,10 @@ public class CheckActivity extends ActionBarActivity {
                 String bigId = json.getString("bigid");
                 bigList[i+1] = new String(bigName);
                 System.out.println(bigList[i+1]);
-                dataList[i+1] = new BigMiddleConnect(bigName,bigId);
+                dataList[i+1] = new BigMiddleConnect(bigName,bigId,serviceUrl,serviceKey);
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    public String getDataFromUrl(String url) throws IOException {
-        // HttpURLConnection을 사용해서 주어진 URL에 대한 입력 스트림을 얻는다.
-        //얻어진 입력스트림을 한줄씩 읽어서 page에 저장하고 return한다.
-        HttpURLConnection conn = null;
-        System.out.println(url);
-        try {
-            URL u = new URL(url);
-            conn = (HttpURLConnection)u.openConnection();
-            conn.setDoOutput(false);
-            BufferedInputStream buf = new BufferedInputStream(conn.getInputStream());
-            BufferedReader bufreader = new BufferedReader(new InputStreamReader(buf));
-
-            String line = null;
-            String page = "";
-            while((line = bufreader.readLine()) != null){
-                page += line;
-            }
-            System.out.println(page);
-            return page;
-        } finally{
-            conn.disconnect();
         }
     }
 
@@ -447,7 +292,7 @@ public class CheckActivity extends ActionBarActivity {
         //검색버튼 클릭시에 작동하는 메소드로 선택된 대분류Id(selectBigid)와 세부분야Id(selectMiddleid)를 통해서
         //API로 부터 해당하는 기관을 찾아준다.
         String searchUrl = "http://ibtk.kr/inspectionAgencyDetail_api/";
-        String searchUrlKey = "3f7f0c56c14ad73f3a0534ba2999f4a2?";
+        String searchUrlKey = "f1609949fce00ad1504508074bc862c4?";
         String searchquery = "model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"accreditnumber\",direction:1}]}&model_query_distinct=companyno";
 
         if(selectCity.length() == 0) {
@@ -547,7 +392,7 @@ public class CheckActivity extends ActionBarActivity {
         results = new ArrayList<ResultData>();
 
         try {
-            String inline = getDataFromUrl(instrUrl);
+            String inline = urlConnector.getDataFromUrl(instrUrl);
             System.out.println("line : "+inline);
             JSONObject injson = new JSONObject(inline);
             JSONArray injArr = injson.getJSONArray("content");
@@ -595,7 +440,7 @@ public class CheckActivity extends ActionBarActivity {
 
     public ArrayAdapter setBigAdapter() {
         //bigList를 통해서 어레이 어댑터를 생성하고 리턴해줌
-        ArrayAdapter tmpAdapter = new myAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, bigList);
+        ArrayAdapter tmpAdapter = new MyArrayAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, bigList);
         tmpAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         return tmpAdapter;
