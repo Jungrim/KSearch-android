@@ -11,10 +11,10 @@
         android:background="#00b5b39d"
         android:clickable="false">
 
-        <ImageView
+        <ImageButton
             android:layout_width="330dp"
             android:layout_height="80dp"
-            android:id="@+id/imageView"
+            android:id="@+id/image_kolas"
             android:layout_gravity="center_horizontal|top"
             android:layout_marginTop="20dp"
             android:background="@drawable/kolas" />

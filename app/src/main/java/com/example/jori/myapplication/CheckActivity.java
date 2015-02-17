@@ -13,6 +13,7 @@ import java.util.StringTokenizer;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
+import android.support.v4.widget.DrawerLayout;
 import android.view.KeyEvent;
 
 
@@ -42,8 +43,9 @@ import android.widget.Toast;
 import javax.xml.transform.Result;
 
 
-public class CheckActivity extends ActionBarActivity {
+public class CheckActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks{
     //BigMiddleConnect[] partList;
+    private NavigationDrawerFragment mNavigationDrawerFragment;
     private String[] bigList;
     private Spinner bigSpinner;
     private Spinner middleSpinner;
@@ -64,6 +66,11 @@ public class CheckActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check);
+
+        mNavigationDrawerFragment.setUp(
+                R.id.navigation_drawer_correction,
+                (DrawerLayout) findViewById(R.id.drawer_layout_correction));
+
 
         urlConnector = new HttpUrlConnect();
         bigSpinner = (Spinner)findViewById(R.id.big_spinner);
@@ -453,13 +460,14 @@ public class CheckActivity extends ActionBarActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_check, menu);
+        getMenuInflater().inflate(R.menu.menu_correction, menu);
         return true;
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -474,5 +482,50 @@ public class CheckActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onNavigationDrawerItemSelected(int position) {
+        // update the main content by replacing fragments
+        if(position==0) {
+            Intent i = new Intent(this,CheckActivity.class);
+            Bundle b= new Bundle();
+            b.putInt("position",position);
+
+            i.putExtras(b);
+            startActivity(i);
+
+        }
+        else if(position ==1){
+            Intent i = new Intent(this,CorrectionActivity.class);
+            Bundle b= new Bundle();
+            b.putInt("position",position);
+
+            i.putExtras(b);
+            startActivity(i);
+
+        }
+        else if(position ==2){
+            Intent i = new Intent(this,ExamActivity.class);
+            Bundle b= new Bundle();
+            b.putInt("position",position);
+
+            i.putExtras(b);
+            startActivity(i);
+        }
+        else if(position ==3){
+            Intent i = new Intent(this,MaterialActivity.class);
+            Bundle b= new Bundle();
+            b.putInt("position",position);
+
+            i.putExtras(b);
+            startActivity(i);
+
+        }else{
+            Intent i = new Intent(this,OftenActivity.class);
+            Bundle b = new Bundle();
+            i.putExtras(b);
+            startActivity(i);
+        }
     }
 }

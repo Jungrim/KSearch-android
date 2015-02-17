@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.Image;
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -58,6 +59,14 @@ public class MainActivity extends ActionBarActivity
         ImageButton correct_btn = (ImageButton)findViewById(R.id.image_correction);
         ImageButton exam_btn = (ImageButton)findViewById(R.id.image_exam);
         ImageButton material_btn = (ImageButton)findViewById(R.id.image_material);
+        ImageButton kolas_btn = (ImageButton)findViewById(R.id.image_kolas);
+
+        kolas_btn.setOnClickListener(new ImageButton.OnClickListener(){
+            public void onClick(View v){
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kolas.go.kr/"));
+                startActivity(intent);
+            }
+        });
 
         check_btn.setOnClickListener(new ImageButton.OnClickListener(){
             public void onClick(View v){
