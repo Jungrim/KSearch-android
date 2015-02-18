@@ -67,6 +67,9 @@ public class CheckActivity extends ActionBarActivity implements NavigationDrawer
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check);
 
+        mNavigationDrawerFragment = (NavigationDrawerFragment)
+                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer_correction);
+
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer_correction,
                 (DrawerLayout) findViewById(R.id.drawer_layout_correction));

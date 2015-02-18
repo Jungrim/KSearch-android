@@ -21,7 +21,19 @@
             android:layout_height="fill_parent"
             android:id="@+id/resultData"
             android:layout_below="@+id/map"
-            android:layout_centerHorizontal="true" />
+            android:layout_centerHorizontal="true"
+            android:layout_above="@+id/call_button" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="전화 걸기"
+            android:id="@+id/call_button"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignRight="@+id/resultData"
+            android:layout_alignEnd="@+id/resultData" />
 
     </RelativeLayout>
 

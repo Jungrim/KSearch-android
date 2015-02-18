@@ -2,10 +2,12 @@ package com.example.jori.myapplication;
 
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +16,9 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,6 +70,8 @@ public class ResultActivity extends ActionBarActivity implements NavigationDrawe
     GoogleMap mMap;
     ResultData result;
     TextView data;
+    Button call_btn;
+
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +93,20 @@ public class ResultActivity extends ActionBarActivity implements NavigationDrawe
         data.setTextSize(16);
         data.setText(setResultData());
 
+        call_btn = (Button)findViewById(R.id.call_button);
+        call_btn.setOnClickListener(new callListener());
+
     }
+
+    private class callListener implements Button.OnClickListener{
+
+        @Override
+        public void onClick(View v) {
+            Uri number = Uri.parse("tel:"+result.getPhoneNumber());
+            startActivity(new Intent(Intent.ACTION_DIAL,number));
+        }
+    }
+
     private class ResultTask extends AsyncTask<String, String, Boolean> {
         //검색 버튼 누를시에 작동하는 AsyncTask로 resultData를 만든다.
 //        ArrayAdapter<String> resultAdapter;
