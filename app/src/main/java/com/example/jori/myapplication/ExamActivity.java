@@ -38,6 +38,7 @@ import java.util.StringTokenizer;
 
 public class ExamActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
+    private NavigationDrawerFragment mNavigationDrawerFragment;
     private String[] bigList;
     private Spinner bigSpinner;
     private Spinner middleSpinner;
@@ -57,6 +58,13 @@ public class ExamActivity extends ActionBarActivity implements NavigationDrawerF
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check);
+
+        mNavigationDrawerFragment = (NavigationDrawerFragment)
+                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer_correction);
+
+        mNavigationDrawerFragment.setUp(
+                R.id.navigation_drawer_correction,
+                (DrawerLayout) findViewById(R.id.drawer_layout_correction));
 
         urlConnector = new HttpUrlConnect();
         bigSpinner = (Spinner)findViewById(R.id.big_spinner);

@@ -68,8 +68,6 @@ public class CustomBaseAdapter extends BaseAdapter {
             convertview = inflater.inflate(R.layout.list_row,null);
 
             viewHolder[position].tv_title = (TextView)convertview.findViewById(R.id.tv_title);
-//            viewHolder.iv_image = (ImageView)convertview.findViewById(R.id.iv_image);
-//            viewHolder.btn_button = (Button)convertview.findViewById(R.id.btn_button);
             viewHolder[position].cb_box = (CheckBox)convertview.findViewById(R.id.cb_box);
 
             convertview.setTag(viewHolder[position]);
@@ -89,12 +87,6 @@ public class CustomBaseAdapter extends BaseAdapter {
         // image 나 button 등에 Tag를 사용해서 position 을 부여해 준다.
         // Tag란 View를 식별할 수 있게 바코드 처럼 Tag를 달아 주는 View의 기능
         // 이라고 생각 하시면 됩니다.
-//        viewHolder.iv_image.setTag(position);
-//        viewHolder.iv_image.setOnClickListener(buttonClickListener);
-//
-//        viewHolder.btn_button.setTag(position);
-//        viewHolder.btn_button.setText(getItem(position).button);
-//        viewHolder.btn_button.setOnClickListener(buttonClickListener);
 
         viewHolder[position].cb_box.setChecked(checkList[position]);
         viewHolder[position].cb_box.setTag(position);
@@ -120,30 +112,10 @@ public class CustomBaseAdapter extends BaseAdapter {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-//
-//                // 이미지 클릭
-//                case R.id.iv_image:
-//                    Toast.makeText(
-//                            mContext,
-//                            "이미지 Tag = " + v.getTag(),
-//                            Toast.LENGTH_SHORT
-//                    ).show();
-//                    break;
-//
-//                // 버튼 클릭
-//                case R.id.btn_button:
-//                    Toast.makeText(
-//                            mContext,
-//                            "버튼 Tag = " + v.getTag(),
-//                            Toast.LENGTH_SHORT
-//                    ).show();
-//                    break;
-
                 // CheckBox
                 case R.id.cb_box:
                     System.out.println(v.getTag());
                     checkList[Integer.parseInt(v.getTag().toString())] = !checkList[Integer.parseInt(v.getTag().toString())];
-//                    viewHolder[Integer.parseInt(v.getTag().toString())].cb_box.setChecked(checkList[Integer.parseInt(v.getTag().toString())]);
                     System.out.println(checkList[Integer.parseInt(v.getTag().toString())]);
                     comName = getItem(Integer.parseInt(v.getTag().toString())).getCompany();
                     comAddr = getItem(Integer.parseInt(v.getTag().toString())).getAddr();
@@ -184,10 +156,7 @@ public class CustomBaseAdapter extends BaseAdapter {
      */
     public class ViewHolder{
         public TextView tv_title;
-//        public ImageView iv_image;
-//        public Button btn_button;
         public CheckBox cb_box;
-
     }
 
     @Override

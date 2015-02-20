@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,7 +71,7 @@ public class ResultActivity extends ActionBarActivity implements NavigationDrawe
     GoogleMap mMap;
     ResultData result;
     TextView data;
-    Button call_btn;
+    ImageButton call_btn;
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
@@ -93,7 +94,7 @@ public class ResultActivity extends ActionBarActivity implements NavigationDrawe
         data.setTextSize(16);
         data.setText(setResultData());
 
-        call_btn = (Button)findViewById(R.id.call_button);
+        call_btn = (ImageButton)findViewById(R.id.call_button);
         call_btn.setOnClickListener(new callListener());
 
     }
@@ -109,16 +110,11 @@ public class ResultActivity extends ActionBarActivity implements NavigationDrawe
 
     private class ResultTask extends AsyncTask<String, String, Boolean> {
         //검색 버튼 누를시에 작동하는 AsyncTask로 resultData를 만든다.
-//        ArrayAdapter<String> resultAdapter;
-        private ArrayList<InfoClass> infoList;
-        CustomBaseAdapter resultAdapter;
         private ProgressDialog dialog;
-        private boolean[] checkList;
 
         @Override
         protected void onPreExecute() {
             //로딩 창을 만들어서 띄워줌
-            infoList = new ArrayList<InfoClass>();
             dialog = new ProgressDialog(ResultActivity.this);
             dialog.setMessage("Loading");
             dialog.show();
@@ -149,9 +145,10 @@ public class ResultActivity extends ActionBarActivity implements NavigationDrawe
         }
     }
     private String setResultData(){
-        String data = new String("인증번호 : "+result.getAccreditNumber());
+        String data = "";//new String("인증번호 : "+result.getAccreditNumber());
 
-        data = data+"회사이름 : "+result.getCompanyName();
+        data = data+"회사명 : "+result.getCompanyName();
+        data = data+"주소 : "+result.getAddr();
         data = data+"전화번호 : "+result.getPhoneNumber();
         data = data+"담당자 : "+result.getChargeName();
         data = data+"측정능력 : "+result.getRangePower();
