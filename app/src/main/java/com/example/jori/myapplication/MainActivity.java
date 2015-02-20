@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -55,10 +56,10 @@ public class MainActivity extends ActionBarActivity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        ImageButton check_btn = (ImageButton)findViewById(R.id.image_check);
-        ImageButton correct_btn = (ImageButton)findViewById(R.id.image_correction);
-        ImageButton exam_btn = (ImageButton)findViewById(R.id.image_exam);
-        ImageButton material_btn = (ImageButton)findViewById(R.id.image_material);
+        Button check_btn = (Button)findViewById(R.id.image_check);
+        Button correct_btn = (Button)findViewById(R.id.image_correction);
+        Button exam_btn = (Button)findViewById(R.id.image_exam);
+        Button material_btn = (Button)findViewById(R.id.image_material);
         ImageButton kolas_btn = (ImageButton)findViewById(R.id.image_kolas);
 
         kolas_btn.setOnClickListener(new ImageButton.OnClickListener(){

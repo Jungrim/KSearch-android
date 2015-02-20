@@ -11,53 +11,88 @@
         android:background="#00b5b39d"
         android:clickable="false">
 
-        <ImageButton
-            android:layout_width="330dp"
-            android:layout_height="80dp"
-            android:id="@+id/image_kolas"
-            android:layout_gravity="center_horizontal|top"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/kolas" />
-
-        <ImageButton
-            android:layout_width="330dp"
-            android:layout_height="80dp"
-            android:id="@+id/image_correction"
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:layout_gravity="center"
+            android:layout_marginTop="10dp">
 
-            android:layout_marginTop="10dp"
-            android:background="@drawable/correction" />
+            <ImageButton
+                android:layout_width="330dp"
+                android:layout_height="80dp"
+                android:id="@+id/image_kolas"
+                android:background="@drawable/kolas"
+                android:layout_gravity="center"
+                android:layout_marginBottom="30dp" />
 
-        <ImageButton
-            android:layout_width="330dp"
-            android:layout_height="80dp"
-            android:id="@+id/image_check"
-            android:layout_gravity="top|center"
-            android:layout_marginTop="155dp"
-            android:baselineAlignBottom="false"
-            android:clickable="false"
-            android:focusable="false"
-            android:background="@drawable/check"
-            style="@style/Base.Widget.AppCompat.ActionButton" />
 
-        <ImageButton
-            android:layout_width="330dp"
-            android:layout_height="80dp"
-            android:id="@+id/image_exam"
+            <Button
+                android:layout_width="330dp"
+                android:layout_height="80dp"
+                android:id="@+id/image_check"
+                android:layout_gravity="center"
+                android:baselineAlignBottom="false"
+                android:clickable="false"
+                android:focusable="false"
 
-            android:layout_marginTop="105dp"
-            android:layout_gravity="center"
-            android:background="@drawable/exam" />
+                android:background="#ffffff"
+                android:drawableLeft = "@drawable/check"
+                android:text="검 사 기 관"
+                android:textAppearance  =  "?android:attr/textAppearanceLarge"
 
-        <ImageButton
-            android:layout_width="330dp"
+                style="@style/Base.Widget.AppCompat.ActionButton"
+                android:layout_marginBottom="10dp" />
 
-            android:layout_height="80dp"
-            android:id="@+id/image_material"
-            android:layout_gravity="center"
+            <Button
+                android:layout_width="330dp"
+                android:layout_height="80dp"
+                android:id="@+id/image_correction"
+                android:layout_gravity="center"
 
-            android:layout_marginTop="200dp"
-            android:background="@drawable/material" />
+                android:background="#ffffff"
+                android:drawableLeft = "@drawable/correction"
+                android:text="교 정 기 관"
+                android:textAppearance  =  "?android:attr/textAppearanceLarge"
+
+
+                android:layout_marginBottom="10dp" />
+
+
+            <Button
+                android:layout_width="330dp"
+                android:layout_height="80dp"
+                android:id="@+id/image_exam"
+
+                android:background="#ffffff"
+                android:drawableLeft = "@drawable/exam"
+                android:text="시 험 기 관"
+                android:textAppearance  = "?android:attr/textAppearanceLarge"
+
+
+                android:layout_gravity="center"
+                android:layout_marginBottom="10dp" />
+
+            <Button
+                android:layout_width="330dp"
+
+                android:layout_height="80dp"
+                android:id="@+id/image_material"
+                android:layout_gravity="center"
+
+                android:background="#ffffff"
+                android:drawableLeft = "@drawable/material"
+                android:text="표 준 물 질 생 성 기 관"
+
+                android:textAppearance  =  "?android:attr/textAppearanceLarge"
+
+
+                android:layout_marginBottom="10dp" />
+
+
+
+
+        </LinearLayout>
     </FrameLayout>
 
     <!-- android:layout_gravity="start" tells DrawerLayout to treat
