@@ -176,7 +176,7 @@ public class ExamActivity extends ActionBarActivity implements NavigationDrawerF
         protected Integer doInBackground(Integer... ids){
             //입력받은 대분류Id(bigid)를 통해서 해당되는 세부분야(middlename)를 불러옴
 
-            dataList[ids[0]].setMiddleList();
+            dataList[ids[0]].setMiddleList("http://ibtk.kr/examAdmitClassification_api/","5c52496ad5eb1617ab730ad60877ea92?");
             return ids[0];
         }
         protected void onPostExecute(Integer id){
@@ -442,7 +442,9 @@ public class ExamActivity extends ActionBarActivity implements NavigationDrawerF
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.home_button) {
+            Intent intent = new Intent(this,MainActivity.class);
+            startActivity(intent);
             return true;
         }
 

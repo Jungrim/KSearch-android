@@ -21,8 +21,6 @@ public class BigMiddleConnect {
     private String bigname;
     private String[] middleList;
     private String[] middleidList;
-    private String middleStr = "";
-    private String middleidStr = "";
     private String serviceUrl;
     private String serviceKey;
 
@@ -34,13 +32,15 @@ public class BigMiddleConnect {
         this.serviceKey = key;
     }
 
-    public void setMiddleList() {
+    public void setMiddleList(String url,String key) {
         //현재 객체의 bigId를 통해서 현재 객체의 대분류에 해당하는 세부분야의 쿼리문을 작성하고
 //            //스트링 리스트로 저장
 //            String inserviceUrl = "http://ibtk.kr/examAdmitDetail_api/";
 //            String inserviceKey = "790f112628bf15b344699602ef729cb1?";
-        String query = "model_query_pageable.enable=true&model_query_distinct=middlename&model_query={\"bigid\":\"" + this.bigId + "\"}";
-        String instrUrl = serviceUrl + serviceKey + query;
+        String middleStr = "";
+        String middleidStr = "";
+        String query = "model_query_pageable={enable:true,pageSize:100,sortOrders:[{property:\"middleid\",direction:1}]}&model_query_distinct=middlename&model_query={\"bigid\":\"" + this.bigId + "\"}";
+        String instrUrl = url + key + query;
         if(this.bigname.equals("인정분야")){
             middleList = new String[1];
             middleidList = new String[1];

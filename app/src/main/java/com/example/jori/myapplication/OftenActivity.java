@@ -150,7 +150,9 @@ public class OftenActivity extends ActionBarActivity implements NavigationDrawer
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.home_button) {
+            Intent intent = new Intent(this,MainActivity.class);
+            startActivity(intent);
             return true;
         }
 

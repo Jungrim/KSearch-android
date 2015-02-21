@@ -188,7 +188,7 @@ public class CheckActivity extends ActionBarActivity implements NavigationDrawer
         protected Integer doInBackground(Integer... ids){
             //입력받은 대분류Id(bigid)를 통해서 해당되는 세부분야(middlename)를 불러옴
 
-            dataList[ids[0]].setMiddleList();
+            dataList[ids[0]].setMiddleList("http://ibtk.kr/inspectionRecognize_api/","3a62fce54ed12d5e45d9c11b76b0ab36?");
             return ids[0];
         }
         protected void onPostExecute(Integer id){
@@ -480,7 +480,9 @@ public class CheckActivity extends ActionBarActivity implements NavigationDrawer
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.home_button) {
+            Intent intent = new Intent(this,MainActivity.class);
+            startActivity(intent);
             return true;
         }
 

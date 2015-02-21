@@ -249,7 +249,7 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
 
         protected Integer doInBackground(Integer... ids){
             //입력받은 대분류Id(bigid)를 통해서 해당되는 세부분야(middlename)를 불러옴
-            dataList[ids[0]].setMiddleList();
+            dataList[ids[0]].setMiddleList("http://ibtk.kr/standardMaterialDetailSearch_api/","cb0b2b73d22b4a00a9c5504901aa9fe0?");
             return ids[0];
         }
         protected void onPostExecute(Integer id){
@@ -530,7 +530,9 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.home_button) {
+            Intent intent = new Intent(this,MainActivity.class);
+            startActivity(intent);
             return true;
         }
 

@@ -1,7 +1,10 @@
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/drawer_layout_correction"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    tools:context=".CorrectionActivity">
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout_correction"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ResultActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -14,7 +17,7 @@
         <fragment
             android:id="@+id/map"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="250dp"
             class="com.google.android.gms.maps.MapFragment"/>
         <TextView
             android:layout_width="match_parent"
@@ -29,6 +32,15 @@
             android:layout_height="wrap_content"
             android:id="@+id/call_button"
             android:background="@drawable/call"
+            android:layout_below="@+id/result_cb"
+            android:layout_alignRight="@+id/resultData"
+            android:layout_alignEnd="@+id/resultData" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/result_cb"
+            android:button="@android:drawable/btn_star"
             android:layout_below="@+id/map"
             android:layout_alignRight="@+id/map"
             android:layout_alignEnd="@+id/map" />

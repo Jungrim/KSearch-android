@@ -110,7 +110,6 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
     }
 
     private class CityItemSelected implements AdapterView.OnItemSelectedListener{
-        private String selectCity;
         @Override
         public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
             String select = (String)citySpinner.getSelectedItem();
@@ -583,7 +582,9 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.home_button) {
+            Intent intent = new Intent(this,MainActivity.class);
+            startActivity(intent);
             return true;
         }
 
