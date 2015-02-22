@@ -12,9 +12,10 @@ public class ResultData implements Serializable {
     private String addr;
     private String accreditNumber;
     private String phoneNumber;
+    private String activityName;
     private boolean check ;
 
-    public ResultData(String companyName,String addr,String accreditNumber,String phoneNumber,String chargeName,String rangePower,Boolean check){
+    public ResultData(String companyName,String addr,String accreditNumber,String phoneNumber,String chargeName,String rangePower,Boolean check,String activityName){
         this.companyName = companyName;
         this.addr = addr;
         this.accreditNumber = accreditNumber;
@@ -22,10 +23,11 @@ public class ResultData implements Serializable {
         this.chargeName = chargeName;
         this.rangePower = rangePower;
         this.check = check;
+        this.activityName = activityName;
     }
     public void setCheck(){ check = !check; }
     public boolean getCheck(){ return check; }
-
+    public String getActivityName() { return activityName;}
     public String getCompanyName(){
         return companyName+"\n";
     }

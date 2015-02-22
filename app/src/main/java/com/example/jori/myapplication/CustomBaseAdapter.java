@@ -29,6 +29,8 @@ public class CustomBaseAdapter extends BaseAdapter {
     private NotesDbAdapter dbAdapter;
     private String comName;
     private String comAddr;
+    private String comActivity;
+
     public CustomBaseAdapter(Context c , ArrayList<InfoClass> arrays, boolean[] checkList){
         this.mContext = c;
         this.inflater = LayoutInflater.from(c);
@@ -119,8 +121,9 @@ public class CustomBaseAdapter extends BaseAdapter {
                     System.out.println(checkList[Integer.parseInt(v.getTag().toString())]);
                     comName = getItem(Integer.parseInt(v.getTag().toString())).getCompany();
                     comAddr = getItem(Integer.parseInt(v.getTag().toString())).getAddr();
+                    comActivity = getItem(Integer.parseInt(v.getTag().toString())).getActivityName();
                     if (checkList[Integer.parseInt(v.getTag().toString())])
-                        dbAdapter.createNote(comName,comAddr);
+                        dbAdapter.createNote(comName,comAddr,comActivity);
                     else
                         dbAdapter.deleteNote(comName);
 

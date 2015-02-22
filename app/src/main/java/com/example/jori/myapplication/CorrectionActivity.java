@@ -189,7 +189,7 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
             dialog.dismiss();
             int i = 0;
             for(ResultData tmpData : results){
-                infoList.add(new InfoClass(tmpData.getAccreditNumber(),tmpData.getCompanyName(),tmpData.getAddr()));
+                infoList.add(new InfoClass(tmpData.getAccreditNumber(),tmpData.getCompanyName(),tmpData.getAddr(),tmpData.getActivityName()));
                 checkList[i++] = tmpData.getCheck();
             }
             resultView.setAdapter(new CustomBaseAdapter(getApplicationContext(),infoList,checkList));
@@ -540,7 +540,7 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
                 String chargeName = injson.getString("chargename");
                 String rangePower = injson.getString("rangepower");
 
-                results.add(new ResultData(companyName, addr, accreditNumber,phoneNumber,chargeName,rangePower,check));
+                results.add(new ResultData(companyName, addr, accreditNumber,phoneNumber,chargeName,rangePower,check,"CorrectionActivity"));
             }
         } catch (Exception e){
             System.out.println("makeQuery" + e.toString());

@@ -150,7 +150,7 @@ public class ExamActivity extends ActionBarActivity implements NavigationDrawerF
             int i = 0;
             dialog.dismiss();
             for(ResultData tmpData : results){
-                infoList.add(new InfoClass(tmpData.getAccreditNumber(),tmpData.getCompanyName(),tmpData.getAddr()));
+                infoList.add(new InfoClass(tmpData.getAccreditNumber(),tmpData.getCompanyName(),tmpData.getAddr(),tmpData.getActivityName()));
                 checkList[i++] = tmpData.getCheck();
             }
             resultView.setAdapter(new CustomBaseAdapter(getApplicationContext(),infoList,checkList));
@@ -409,7 +409,7 @@ public class ExamActivity extends ActionBarActivity implements NavigationDrawerF
                 String chargeName = injson.getString("chargename");
                 String rangePower = injson.getString("rangepower");
 
-                results.add(new ResultData(companyName, addr, accreditNumber,phoneNumber,chargeName,rangePower,false));
+                results.add(new ResultData(companyName, addr, accreditNumber,phoneNumber,chargeName,rangePower,false,"ExamActivity"));
 
             }
         } catch (Exception e){

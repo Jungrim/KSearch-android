@@ -122,7 +122,7 @@ public class ResultActivity extends ActionBarActivity implements NavigationDrawe
                     result.setCheck();
 
                     if (result.getCheck())
-                        dbAdapter.createNote(result.getCompanyName(),result.getAddr());
+                        dbAdapter.createNote(result.getCompanyName(),result.getAddr(),result.getActivityName());
                     else
                         dbAdapter.deleteNote(result.getCompanyName());
 
