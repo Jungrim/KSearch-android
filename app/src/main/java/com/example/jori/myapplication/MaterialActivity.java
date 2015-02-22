@@ -3,6 +3,7 @@ package com.example.jori.myapplication;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.os.AsyncTask;
@@ -38,7 +39,7 @@ import java.util.StringTokenizer;
 
 
 public class MaterialActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-
+    private String activityName = "MaterialActivity";
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private CharSequence mTitle;
     private String[] bigList;
@@ -59,6 +60,8 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
     private ListView resultView;
     private ArrayList<ResultData> results;
     private HttpUrlConnect urlConnector;
+
+    private NotesDbAdapter dbAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +89,9 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
         new BigAdapterTask().execute();
         resultView = (ListView) findViewById(R.id.result_view);
         resultView.setOnItemClickListener(new resultViewListener());
+
+        dbAdapter = new NotesDbAdapter(this);
+        dbAdapter.open();
     }
 
     public class resultViewListener implements ListView.OnItemClickListener{
@@ -468,7 +474,7 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
                     String instrUrl = insearchUrl + insearchUrlKey + insearchquery;
 
                     String inline = urlConnector.getDataFromUrl(instrUrl);
-                    System.out.println("line : "+inline);
+                    System.out.println("inline : "+inline);
                     JSONObject injson = new JSONObject(inline);
                     JSONArray injArr = injson.getJSONArray("content");
 //            results = new resultData[injArr.length()];
@@ -477,23 +483,44 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
                         //생성된 ResultData객체를 results벡터에 저장
                         injson = injArr.getJSONObject(i);
                         String companyName = injson.getString("company");
+
+                        Boolean check = false;
+
+                        Cursor result = dbAdapter.fetchAllNotes();
+                        result.moveToFirst();
+                        while (!result.isAfterLast()) {
+                            String title = result.getString(1);
+                            String activity = result.getString(3);
+
+                            System.out.println("디비정보불러오기 "+ title);
+                            System.out.println("회사이름 " + companyName);
+                            System.out.println("아니시발이거뭐야 " + companyName.equals(title.trim()));
+                            if ((companyName.equals(title.trim()))&&(activity.equals(activityName))) {
+                                check = true;
+                                System.out.println("둘이똑같을때" + title);
+                                break;
+                            }
+                            result.moveToNext();
+                        }
+                        result.close();
+
                         String addr = injson.getString("delegateaddr");
                         String accreditNumber = injson.getString("accreditnumber");
                         String phoneNumber = injson.getString("delegatephone");
                         String chargeName = injson.getString("chargename");
                         String rangePower = injson.getString("rangepower");
 
-                        results.add(new com.example.jori.myapplication.ResultData(companyName, addr, accreditNumber,phoneNumber,chargeName,rangePower,false,"MaterialActivity"));
+                        results.add(new ResultData(companyName, addr, accreditNumber,phoneNumber,chargeName,rangePower,check,activityName));
 
                     }
                 } catch (Exception e){
-                    System.out.println("makeQuery" + e.toString());
+                    System.out.println("makeQuery1" + e.toString());
                     return;
                     //return "middleList" + e.toString();
                 }
             }
         } catch (Exception e){
-            System.out.println("makeQuery" + e.toString());
+            System.out.println("makeQuery2" + e.toString());
             return;
             //return "middleList" + e.toString();
         }

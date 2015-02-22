@@ -3,6 +3,7 @@ package com.example.jori.myapplication;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v4.widget.DrawerLayout;
@@ -37,7 +38,7 @@ import java.util.StringTokenizer;
 
 
 public class ExamActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-
+    private String activityName = "ExamActivity";
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private String[] bigList;
     private Spinner bigSpinner;
@@ -54,6 +55,7 @@ public class ExamActivity extends ActionBarActivity implements NavigationDrawerF
     private Spinner citySpinner;
     private HttpUrlConnect urlConnector;
 
+    private NotesDbAdapter dbAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +79,9 @@ public class ExamActivity extends ActionBarActivity implements NavigationDrawerF
         new BigAdapterTask().execute();
         resultView = (ListView) findViewById(R.id.result_view);
         resultView.setOnItemClickListener(new resultViewListener());
+
+        dbAdapter = new NotesDbAdapter(this);
+        dbAdapter.open();
     }
 
     public class resultViewListener implements ListView.OnItemClickListener{
@@ -403,13 +408,33 @@ public class ExamActivity extends ActionBarActivity implements NavigationDrawerF
                 //생성된 ResultData객체를 results벡터에 저장
                 injson = injArr.getJSONObject(j);
                 String companyName = injson.getString("company");
+                Boolean check = false;
+
+                Cursor result = dbAdapter.fetchAllNotes();
+                result.moveToFirst();
+                while (!result.isAfterLast()) {
+                    String title = result.getString(1);
+                    String activity = result.getString(3);
+
+                    System.out.println("디비정보불러오기 "+ title);
+                    System.out.println("회사이름 " + companyName);
+                    System.out.println("아니시발이거뭐야 " + companyName.equals(title.trim()));
+                    if ((companyName.equals(title.trim()))&&(activity.equals(activityName))) {
+                        check = true;
+                        System.out.println("둘이똑같을때" + title);
+                        break;
+                    }
+                    result.moveToNext();
+                }
+                result.close();
+
                 String addr = injson.getString("delegateaddr");
                 String accreditNumber = injson.getString("accreditnumber");
                 String phoneNumber = injson.getString("delegatephone");
                 String chargeName = injson.getString("chargename");
                 String rangePower = injson.getString("rangepower");
 
-                results.add(new ResultData(companyName, addr, accreditNumber,phoneNumber,chargeName,rangePower,false,"ExamActivity"));
+                results.add(new ResultData(companyName, addr, accreditNumber,phoneNumber,chargeName,rangePower,check,activityName));
 
             }
         } catch (Exception e){
