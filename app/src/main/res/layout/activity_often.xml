@@ -14,6 +14,7 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true" />
+
     </RelativeLayout>
     <fragment android:id="@+id/navigation_drawer_often"
         android:layout_width="@dimen/navigation_drawer_width" android:layout_height="match_parent"

@@ -4,6 +4,7 @@ package com.example.jori.myapplication;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -69,7 +70,9 @@ public class CustomBaseAdapter extends BaseAdapter {
         if(convertview == null){
             convertview = inflater.inflate(R.layout.list_row,null);
 
-            viewHolder[position].tv_title = (TextView)convertview.findViewById(R.id.tv_title);
+            viewHolder[position].accredit = (TextView)convertview.findViewById(R.id.accredit);
+            viewHolder[position].companyName = (TextView)convertview.findViewById(R.id.company);
+            viewHolder[position].addr = (TextView)convertview.findViewById(R.id.addr);
             viewHolder[position].cb_box = (CheckBox)convertview.findViewById(R.id.cb_box);
 
             convertview.setTag(viewHolder[position]);
@@ -79,12 +82,30 @@ public class CustomBaseAdapter extends BaseAdapter {
             viewHolder[position] = (ViewHolder)convertview.getTag();
         }
 
-        viewHolder[position].tv_title.setTextColor(Color.BLACK);
-//        viewHolder.tv_title.setTextSize(12);
-        viewHolder[position].tv_title.setLines(3);
-//        viewHolder.tv_title.setWidth(500);
-        viewHolder[position].tv_title.setEllipsize(TextUtils.TruncateAt.MARQUEE);
-        viewHolder[position].tv_title.setText(getItem(position).getAccreditNumber()+getItem(position).getCompany()+getItem(position).getAddr());
+        viewHolder[position].accredit.setTextColor(Color.BLACK);
+        viewHolder[position].accredit.setTextSize(14);
+        viewHolder[position].accredit.setPaintFlags(viewHolder[position].accredit.getPaintFlags() | Paint.FAKE_BOLD_TEXT_FLAG);
+        viewHolder[position].accredit.setText(getItem(position).getAccreditNumber().trim());
+
+
+        viewHolder[position].companyName.setTextColor(Color.BLACK);
+        viewHolder[position].companyName.setTextSize(14);
+        viewHolder[position].companyName.setLines(1);
+        viewHolder[position].companyName.setPaintFlags(viewHolder[position].companyName.getPaintFlags() | Paint.FAKE_BOLD_TEXT_FLAG);
+        String company = getItem(position).getCompany().trim();
+        if(company.length()>=18){
+            company = company.substring(0,15)+"...";
+        }
+        viewHolder[position].companyName.setText(company);
+
+        viewHolder[position].addr.setTextColor(Color.BLACK);
+        viewHolder[position].addr.setTextSize(12);
+        viewHolder[position].addr.setLines(1);
+        String addr = getItem(position).getAddr().trim();
+        if(addr.length()>=32){
+            addr = addr.substring(0,29)+"...";
+        }
+        viewHolder[position].addr.setText(addr);
 
         // image 나 button 등에 Tag를 사용해서 position 을 부여해 준다.
         // Tag란 View를 식별할 수 있게 바코드 처럼 Tag를 달아 주는 View의 기능
@@ -158,7 +179,9 @@ public class CustomBaseAdapter extends BaseAdapter {
      * 한번의 findViewByID 로 재사용 하기 위해 viewHolder를 사용 한다.
      */
     public class ViewHolder{
-        public TextView tv_title;
+        public TextView accredit;
+        public TextView companyName;
+        public TextView addr;
         public CheckBox cb_box;
     }
 

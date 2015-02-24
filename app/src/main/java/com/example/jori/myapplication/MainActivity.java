@@ -71,8 +71,8 @@ public class MainActivity extends ActionBarActivity
 
         check_btn.setOnClickListener(new ImageButton.OnClickListener(){
             public void onClick(View v){
-                Intent intent = new Intent(MainActivity.this,CheckActivity.class);
-                intent.putExtra("intent_name","check");
+                Intent intent = new Intent(MainActivity.this,OftenActivity.class);
+                intent.putExtra("intent_name","often");
                 startActivity(intent);
             }
         });

@@ -1,21 +1,30 @@
 package com.example.jori.myapplication;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -57,28 +66,28 @@ public class OftenActivity extends ActionBarActivity implements NavigationDrawer
         result.close();
 
         ListView listview = (ListView)findViewById(R.id.listView);
-
-        listview.setAdapter(new ArrayAdapter<Bookmark>(
-                this,
-                android.R.layout.simple_list_item_2,
-                android.R.id.text1,
-                bookList) {
-
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-
-                View view = super.getView(position, convertView, parent);
-
-                Bookmark book = bookList.get(position);
-                TextView text1 = (TextView) view.findViewById(android.R.id.text1);
-                TextView text2 = (TextView) view.findViewById(android.R.id.text2);
-
-                text1.setText(book.getComName());
-                text2.setText(book.getComAddr());
-                return view;
-            }
-
-        });
+        listview.setAdapter(new OftenAdapter(this));
+//        listview.setAdapter(new ArrayAdapter<Bookmark>(
+//                this,
+//                android.R.layout.simple_list_item_2,
+//                android.R.id.text1,
+//                bookList) {
+//
+//            @Override
+//            public View getView(int position, View convertView, ViewGroup parent) {
+//
+//                View view = super.getView(position, convertView, parent);
+//
+//                Bookmark book = bookList.get(position);
+//                TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+//                TextView text2 = (TextView) view.findViewById(android.R.id.text2);
+//
+//                text1.setText(book.getComName());
+//                text2.setText(book.getComAddr());
+//                return view;
+//            }
+//
+//        });
         listview.setOnItemClickListener(new oftenViewListener());
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -89,6 +98,124 @@ public class OftenActivity extends ActionBarActivity implements NavigationDrawer
                 R.id.navigation_drawer_often,
                 (DrawerLayout) findViewById(R.id.drawer_layout_often));
 
+    }
+
+    private class OftenAdapter extends BaseAdapter{
+        private LayoutInflater inflater = null;
+        private ViewHolder[] viewHolder = null;
+        private Context mContext = null;
+
+
+        public OftenAdapter (Context c ){
+            this.mContext = c;
+            this.inflater = LayoutInflater.from(c);
+            viewHolder = new ViewHolder[bookList.size()];
+
+        }
+
+        // Adapter가 관리할 Data의 개수를 설정 합니다.
+        @Override
+        public int getCount() {
+            return bookList.size();
+        }
+
+        // Adapter가 관리하는 Data의 Item 의 Position을 <객체> 형태로 얻어 옵니다.
+        @Override
+        public Bookmark getItem(int position) {
+            return bookList.get(position);
+        }
+
+        // Adapter가 관리하는 Data의 Item 의 position 값의 ID 를 얻어 옵니다.
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        // ListView의 뿌려질 한줄의 Row를 설정 합니다.
+        @Override
+        public View getView(int position, View convertview, ViewGroup parent) {
+
+            viewHolder[position] = new ViewHolder();
+            if(convertview == null){
+                convertview = inflater.inflate(R.layout.often_row,null);
+
+                viewHolder[position].title = (TextView)convertview.findViewById(R.id.often_title);
+                viewHolder[position].addr = (TextView)convertview.findViewById(R.id.often_addr);
+                viewHolder[position].btn = (Button)convertview.findViewById(R.id.del_btn);
+
+                convertview.setTag(viewHolder[position]);
+
+            }else {
+
+                viewHolder[position] = (ViewHolder)convertview.getTag();
+            }
+
+            viewHolder[position].title.setTextColor(Color.BLACK);
+            viewHolder[position].title.setTextSize(18);
+            viewHolder[position].title.setLines(1);
+            viewHolder[position].title.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+            viewHolder[position].title.setPaintFlags(viewHolder[position].title.getPaintFlags() | Paint.FAKE_BOLD_TEXT_FLAG);
+
+            String comName = getItem(position).getComName().trim();
+            if(comName.length()>=12){
+                comName = comName.substring(0,12)+"...";
+            }
+            viewHolder[position].title.setText(comName);
+
+            viewHolder[position].addr.setTextColor(Color.GRAY);
+            viewHolder[position].addr.setTextSize(14);
+
+            String comAddr = getItem(position).getComAddr();
+            if(comAddr.length()>=22){
+                comAddr = comAddr.substring(0,22)+"...";
+            }
+            viewHolder[position].addr.setText(comAddr);
+
+            viewHolder[position].btn.setTag(position);
+            viewHolder[position].btn.setOnClickListener(buttonClickListener);
+
+            return convertview;
+        }
+
+        private View.OnClickListener buttonClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()) {
+                    case R.id.del_btn:
+                        System.out.println(v.getTag().toString());
+                        dbAdapter.deleteNote(getItem(Integer.parseInt(v.getTag().toString())).getComName());
+                        Intent intent = new Intent(OftenActivity.this,OftenActivity.class);
+                        startActivity(intent);
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        };
+
+        /*
+         * ViewHolder
+         * getView의 속도 향상을 위해 쓴다.
+         * 한번의 findViewByID 로 재사용 하기 위해 viewHolder를 사용 한다.
+         */
+        public class ViewHolder{
+            public TextView title;
+            public TextView addr;
+            public Button btn;
+        }
+
+        @Override
+        protected void finalize() throws Throwable {
+            free();
+            super.finalize();
+        }
+
+        private void free(){
+            inflater = null;
+            viewHolder = null;
+            mContext = null;
+        }
     }
 
     public class oftenViewListener implements ListView.OnItemClickListener {

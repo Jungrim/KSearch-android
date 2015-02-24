@@ -38,7 +38,7 @@
 
                 android:background="#ffffff"
                 android:drawableLeft = "@drawable/check"
-                android:text="검 사 기 관"
+                android:text="즐 겨 찾 기 목 록"
                 android:textAppearance  =  "?android:attr/textAppearanceLarge"
 
                 style="@style/Base.Widget.AppCompat.ActionButton"
