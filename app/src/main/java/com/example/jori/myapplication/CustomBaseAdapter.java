@@ -71,7 +71,7 @@ public class CustomBaseAdapter extends BaseAdapter {
             convertview = inflater.inflate(R.layout.list_row,null);
 
             viewHolder[position].accredit = (TextView)convertview.findViewById(R.id.accredit);
-            viewHolder[position].companyName = (TextView)convertview.findViewById(R.id.company);
+            viewHolder[position].companyName = (TextView)convertview.findViewById(R.id.title);
             viewHolder[position].addr = (TextView)convertview.findViewById(R.id.addr);
             viewHolder[position].cb_box = (CheckBox)convertview.findViewById(R.id.cb_box);
 
