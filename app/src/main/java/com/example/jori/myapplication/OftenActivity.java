@@ -1,5 +1,7 @@
 package com.example.jori.myapplication;
 
+import android.annotation.TargetApi;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +9,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -41,32 +44,26 @@ public class OftenActivity extends ActionBarActivity implements NavigationDrawer
     private ArrayList<Bookmark> bookList;
     private ResultData result;
     private HttpUrlConnect urlConnector;
+    private ListView listview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_often);
 
+        mNavigationDrawerFragment = (NavigationDrawerFragment)
+                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer_often);
+        mTitle = getTitle();
+
+        mNavigationDrawerFragment.setUp(
+                R.id.navigation_drawer_often,
+                (DrawerLayout) findViewById(R.id.drawer_layout_often));
+
+        bookList = new ArrayList<Bookmark>();
         dbAdapter = new NotesDbAdapter(this);
         dbAdapter.open();
 
-        bookList = new ArrayList<Bookmark>();
-
-        Cursor result = dbAdapter.fetchAllNotes();
-        result.moveToFirst();
-        while (!result.isAfterLast()) {
-
-            String companyName = result.getString(1);
-            String companyAddr = result.getString(2);
-            activity = result.getString(3);
-            bookList.add(new Bookmark(companyName, companyAddr,activity));
-
-            result.moveToNext();
-        }
-        result.close();
-
-        ListView listview = (ListView)findViewById(R.id.listView);
-        listview.setAdapter(new OftenAdapter(this));
+        listview = (ListView)findViewById(R.id.listView);
 //        listview.setAdapter(new ArrayAdapter<Bookmark>(
 //                this,
 //                android.R.layout.simple_list_item_2,
@@ -88,16 +85,8 @@ public class OftenActivity extends ActionBarActivity implements NavigationDrawer
 //            }
 //
 //        });
-        listview.setOnItemClickListener(new oftenViewListener());
-
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer_often);
-        mTitle = getTitle();
-
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer_often,
-                (DrawerLayout) findViewById(R.id.drawer_layout_often));
-
+//        listview.setOnItemClickListener(new oftenViewListener());
+        makeBookList();
     }
 
     private class OftenAdapter extends BaseAdapter{
@@ -150,11 +139,13 @@ public class OftenActivity extends ActionBarActivity implements NavigationDrawer
                 viewHolder[position] = (ViewHolder)convertview.getTag();
             }
 
+            viewHolder[position].title.setTag(position);
             viewHolder[position].title.setTextColor(Color.BLACK);
             viewHolder[position].title.setTextSize(18);
             viewHolder[position].title.setLines(1);
             viewHolder[position].title.setEllipsize(TextUtils.TruncateAt.MARQUEE);
             viewHolder[position].title.setPaintFlags(viewHolder[position].title.getPaintFlags() | Paint.FAKE_BOLD_TEXT_FLAG);
+            viewHolder[position].title.setOnClickListener(buttonClickListener);
 
             String comName = getItem(position).getComName().trim();
             if(comName.length()>=12){
@@ -162,9 +153,10 @@ public class OftenActivity extends ActionBarActivity implements NavigationDrawer
             }
             viewHolder[position].title.setText(comName);
 
+            viewHolder[position].addr.setTag(position);
             viewHolder[position].addr.setTextColor(Color.GRAY);
             viewHolder[position].addr.setTextSize(14);
-
+            viewHolder[position].addr.setOnClickListener(buttonClickListener);
             String comAddr = getItem(position).getComAddr();
             if(comAddr.length()>=22){
                 comAddr = comAddr.substring(0,22)+"...";
@@ -189,6 +181,34 @@ public class OftenActivity extends ActionBarActivity implements NavigationDrawer
                         break;
 
                     default:
+                        String companyName = null;
+                        Bookmark selectBook = getItem(Integer.parseInt(v.getTag().toString()));
+                        //선택된 Bookmark의 companyName UTF-8로 incoding
+                        try{
+                            companyName = URLEncoder.encode(selectBook.getComName().trim(), "UTF-8");
+                        } catch (Exception e){
+                            System.out.println(e.toString());
+                        }
+
+                        //switch문을 통해 어떤 activity인지 검사
+                        switch(selectBook.getActivity()){
+                            case "CheckActivity" :
+                                makeResultData(1,companyName);
+                                System.out.println("Check!");
+                                break;
+                            case "CorrectionActivity" :
+                                makeResultData(2,companyName);
+                                System.out.println("Correction!");
+                                break;
+                            case "ExamActivity" :
+                                makeResultData(3,companyName);
+                                System.out.println("Exam!");
+                                break;
+                            case "MaterialActivity" :
+                                makeResultData(4,companyName);
+                                System.out.println("Material!");
+                                break;
+                        }
                         break;
                 }
             }
@@ -199,6 +219,7 @@ public class OftenActivity extends ActionBarActivity implements NavigationDrawer
          * getView의 속도 향상을 위해 쓴다.
          * 한번의 findViewByID 로 재사용 하기 위해 viewHolder를 사용 한다.
          */
+
         public class ViewHolder{
             public TextView title;
             public TextView addr;
@@ -218,40 +239,40 @@ public class OftenActivity extends ActionBarActivity implements NavigationDrawer
         }
     }
 
-    public class oftenViewListener implements ListView.OnItemClickListener {
-        //ListView 클릭시의 이벤트
-        String companyName;
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Bookmark selectBook = bookList.get(position);
-            //선택된 Bookmark의 companyName UTF-8로 incoding
-            try{
-                companyName = URLEncoder.encode(selectBook.getComName().trim(), "UTF-8");
-            } catch (Exception e){
-                System.out.println(e.toString());
-            }
-
-            //switch문을 통해 어떤 activity인지 검사
-            switch(selectBook.getActivity()){
-                case "CheckActivity" :
-                    makeResultData(1,companyName);
-                    System.out.println("Check!");
-                    break;
-                case "CorrectionActivity" :
-                    makeResultData(2,companyName);
-                    System.out.println("Correction!");
-                    break;
-                case "ExamActivity" :
-                    makeResultData(3,companyName);
-                    System.out.println("Exam!");
-                    break;
-                case "MaterialActivity" :
-                    makeResultData(4,companyName);
-                    System.out.println("Material!");
-                    break;
-            }
-        }
-    }
+//    public class oftenViewListener implements ListView.OnItemClickListener {
+//        //ListView 클릭시의 이벤트
+//        String companyName;
+//        @Override
+//        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//            Bookmark selectBook = bookList.get(position);
+//            //선택된 Bookmark의 companyName UTF-8로 incoding
+//            try{
+//                companyName = URLEncoder.encode(selectBook.getComName().trim(), "UTF-8");
+//            } catch (Exception e){
+//                System.out.println(e.toString());
+//            }
+//
+//            //switch문을 통해 어떤 activity인지 검사
+//            switch(selectBook.getActivity()){
+//                case "CheckActivity" :
+//                    makeResultData(1,companyName);
+//                    System.out.println("Check!");
+//                    break;
+//                case "CorrectionActivity" :
+//                    makeResultData(2,companyName);
+//                    System.out.println("Correction!");
+//                    break;
+//                case "ExamActivity" :
+//                    makeResultData(3,companyName);
+//                    System.out.println("Exam!");
+//                    break;
+//                case "MaterialActivity" :
+//                    makeResultData(4,companyName);
+//                    System.out.println("Material!");
+//                    break;
+//            }
+//        }
+//    }
 
     private class makeResultTask extends AsyncTask<String, Void, Void>{
         //ReesultData를 만드는 AsyncTask
@@ -368,6 +389,24 @@ public class OftenActivity extends ActionBarActivity implements NavigationDrawer
         System.out.println(url+key+query);
         return url+key+query;
     }
+
+    public void makeBookList(){
+
+        Cursor result = dbAdapter.fetchAllNotes();
+        result.moveToFirst();
+        while (!result.isAfterLast()) {
+
+            String companyName = result.getString(1);
+            String companyAddr = result.getString(2);
+            activity = result.getString(3);
+            bookList.add(new Bookmark(companyName, companyAddr,activity));
+
+            result.moveToNext();
+        }
+        result.close();
+        listview.setAdapter(new OftenAdapter(getApplicationContext()));
+    }
+
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
