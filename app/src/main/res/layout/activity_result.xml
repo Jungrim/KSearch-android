@@ -17,15 +17,8 @@
         <fragment
             android:id="@+id/map"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="200dp"
             class="com.google.android.gms.maps.MapFragment"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:id="@+id/resultData"
-            android:layout_below="@+id/map"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true" />
 
         <ImageButton
             android:layout_width="wrap_content"
@@ -33,8 +26,8 @@
             android:id="@+id/call_button"
             android:background="@drawable/call"
             android:layout_below="@+id/result_cb"
-            android:layout_alignRight="@+id/resultData"
-            android:layout_alignEnd="@+id/resultData" />
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
 
         <CheckBox
             android:layout_width="wrap_content"
@@ -42,8 +35,119 @@
             android:id="@+id/result_cb"
             android:button="@android:drawable/btn_star"
             android:layout_below="@+id/map"
-            android:layout_alignRight="@+id/map"
-            android:layout_alignEnd="@+id/map" />
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+        <TableLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@+id/map"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@+id/call_button"
+            android:stretchColumns = "1"
+            android:layout_toLeftOf="@+id/call_button">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2px"/>
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+                <TextView
+                    android:layout_column="0"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:background="#666666"
+                    android:textSize="16sp"
+                    android:text="기관명">
+                </TextView>
+                <TextView
+                    android:id="@+id/companyName_col"
+                    android:layout_column="1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content">
+                </TextView>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+                <TextView
+                    android:layout_column="0"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:background="#666666"
+                    android:textSize="16sp"
+                    android:text="주소">
+                </TextView>
+                <TextView
+                    android:id="@+id/companyAddr_col"
+                    android:layout_column="1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content">
+                </TextView>
+            </TableRow>
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+                <TextView
+                    android:layout_column="0"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:background="#666666"
+                    android:textSize="16sp"
+                    android:text="전화번호">
+                </TextView>
+                <TextView
+                    android:id="@+id/companyNum_col"
+                    android:layout_column="1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content">
+                </TextView>
+            </TableRow>
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+                <TextView
+                    android:layout_column="0"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="16sp"
+                    android:background="#666666"
+                    android:text="담당자">
+                </TextView>
+                <TextView
+                    android:id="@+id/companyPer_col"
+                    android:layout_column="1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content">
+                </TextView>
+            </TableRow>
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+                <TextView
+                    android:layout_column="0"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:background="#666666"
+                    android:textSize="16sp"
+                    android:text="측정능력">
+                </TextView>
+                <TextView
+                    android:id="@+id/companyRange_col"
+                    android:layout_column="1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content">
+                </TextView>
+            </TableRow>
+
+        </TableLayout>
 
     </RelativeLayout>
 

@@ -72,7 +72,11 @@ public class ResultActivity extends ActionBarActivity implements NavigationDrawe
     private String address;
     private GoogleMap mMap;
     private ResultData result;
-    private TextView data;
+    private TextView company;
+    private TextView addr;
+    private TextView num;
+    private TextView person;
+    private TextView range;
     private ImageButton call_btn;
     private CheckBox cb_box;
     private NotesDbAdapter dbAdapter;
@@ -94,11 +98,12 @@ public class ResultActivity extends ActionBarActivity implements NavigationDrawe
 //
 //        UiSettings uiSettings = mMap.getUiSettings();
 //        uiSettings.setZoomControlsEnabled(true);
-
-        data = (TextView)findViewById(R.id.resultData);
-        data.setTextColor(Color.BLACK);
-        data.setTextSize(16);
-        data.setText(setResultData());
+        company = (TextView)findViewById(R.id.companyName_col);
+        addr = (TextView)findViewById(R.id.companyAddr_col);
+        num = (TextView)findViewById(R.id.companyNum_col);
+        person = (TextView)findViewById(R.id.companyPer_col);
+        range = (TextView)findViewById(R.id.companyRange_col);
+        setTextView();
 
         call_btn = (ImageButton)findViewById(R.id.call_button);
         call_btn.setOnClickListener(buttonClickListener);
@@ -370,6 +375,28 @@ public class ResultActivity extends ActionBarActivity implements NavigationDrawe
             return sb;
         }
     }
+    private void setTextView(){
+        company.setTextColor(Color.BLACK);
+        company.setTextSize(16);
+        company.setText(result.getCompanyName().trim());
+
+        addr.setTextColor(Color.BLACK);
+        addr.setTextSize(16);
+        addr.setText(result.getAddr().trim());
+
+        num.setTextColor(Color.BLACK);
+        num.setTextSize(16);
+        num.setText(result.getPhoneNumber().trim());
+
+        person.setTextColor(Color.BLACK);
+        person.setTextSize(16);
+        person.setText(result.getChargeName().trim());
+
+        range.setTextColor(Color.BLACK);
+        range.setTextSize(16);
+        range.setText(result.getRangePower().trim());
+
+    }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ( keyCode == KeyEvent.KEYCODE_MENU ) {
@@ -407,16 +434,7 @@ public class ResultActivity extends ActionBarActivity implements NavigationDrawe
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-        if(position==0) {
-            Intent i = new Intent(this,CheckActivity.class);
-            Bundle b= new Bundle();
-            b.putInt("position",position);
-
-            i.putExtras(b);
-            startActivity(i);
-
-        }
-        else if(position ==1){
+        if(position ==0){
             Intent i = new Intent(this,CorrectionActivity.class);
             Bundle b= new Bundle();
             b.putInt("position",position);
@@ -425,7 +443,7 @@ public class ResultActivity extends ActionBarActivity implements NavigationDrawe
             startActivity(i);
 
         }
-        else if(position ==2){
+        else if(position ==1){
             Intent i = new Intent(this,ExamActivity.class);
             Bundle b= new Bundle();
             b.putInt("position",position);
@@ -433,7 +451,7 @@ public class ResultActivity extends ActionBarActivity implements NavigationDrawe
             i.putExtras(b);
             startActivity(i);
         }
-        else if(position ==3){
+        else if(position ==2){
             Intent i = new Intent(this,MaterialActivity.class);
             Bundle b= new Bundle();
             b.putInt("position",position);

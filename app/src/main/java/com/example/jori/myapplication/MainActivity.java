@@ -107,16 +107,7 @@ public class MainActivity extends ActionBarActivity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-        if(position==0) {
-            Intent i = new Intent(this,CheckActivity.class);
-            Bundle b= new Bundle();
-            b.putInt("position",position);
-
-            i.putExtras(b);
-            startActivity(i);
-
-        }
-        else if(position ==1){
+        if(position ==0){
             Intent i = new Intent(this,CorrectionActivity.class);
             Bundle b= new Bundle();
             b.putInt("position",position);
@@ -125,7 +116,7 @@ public class MainActivity extends ActionBarActivity
             startActivity(i);
 
         }
-        else if(position ==2){
+        else if(position ==1){
             Intent i = new Intent(this,ExamActivity.class);
             Bundle b= new Bundle();
             b.putInt("position",position);
@@ -133,7 +124,7 @@ public class MainActivity extends ActionBarActivity
             i.putExtras(b);
             startActivity(i);
         }
-        else if(position ==3){
+        else if(position ==2){
             Intent i = new Intent(this,MaterialActivity.class);
             Bundle b= new Bundle();
             b.putInt("position",position);
@@ -153,18 +144,15 @@ public class MainActivity extends ActionBarActivity
     public void onSectionAttached(int number) {
         switch (number) {
             case 1:
-                mTitle = getString(R.string.title_section1);
-                break;
-            case 2:
                 mTitle = getString(R.string.title_section2);
                 break;
-            case 3:
+            case 2:
                 mTitle = getString(R.string.title_section3);
                 break;
-            case 4:
+            case 3:
                 mTitle = getString(R.string.title_section4);
                 break;
-            case 5:
+            case 4:
                 mTitle = "즐겨찾기 목록";
 
 
