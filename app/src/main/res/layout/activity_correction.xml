@@ -58,7 +58,6 @@
             android:layout_height="wrap_content"
             android:id="@+id/city_spinner"
             android:layout_below="@+id/big_spinner"
-            android:entries="@array/city"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_toLeftOf="@+id/small_spinner"

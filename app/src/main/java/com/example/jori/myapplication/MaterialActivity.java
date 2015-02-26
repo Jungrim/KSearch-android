@@ -42,6 +42,9 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
     private String activityName = "MaterialActivity";
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private CharSequence mTitle;
+    String[] city = {"시도별","서울","부산","대구","광주","인천","대전","울산","경기","강원","제주","세종","충청북도","충청남도"
+            ,"전라북도","전라남도","경상북도","경상남도"};
+
     private String[] bigList;
     private SmallData[] smallList;
     private Spinner bigSpinner;
@@ -66,7 +69,7 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_correction);
+        setContentView(R.layout.activity_material);
 
         urlConnector = new HttpUrlConnect();
 
@@ -82,6 +85,7 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
         middleSpinner = (Spinner)findViewById(R.id.middle_spinner);
         smallSpinner = (Spinner)findViewById(R.id.small_spinner);
         citySpinner = (Spinner)findViewById(R.id.city_spinner);
+        citySpinner.setAdapter(new MyArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,city));
         citySpinner.setOnItemSelectedListener(new CityItemSelected());
         searchButton = (Button)findViewById(R.id.search_button);
         searchButton.setOnClickListener(new searchButtonListener());

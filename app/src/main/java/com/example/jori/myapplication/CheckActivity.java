@@ -1,14 +1,7 @@
 package com.example.jori.myapplication;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -20,27 +13,18 @@ import android.view.KeyEvent;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
-import android.app.Activity;
-import android.content.Context;
-import android.graphics.Color;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.os.AsyncTask;
-import android.widget.Toast;
-
-import javax.xml.transform.Result;
 
 
 public class CheckActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks{
@@ -65,7 +49,7 @@ public class CheckActivity extends ActionBarActivity implements NavigationDrawer
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_check);
+        setContentView(R.layout.activity_exam);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer_correction);

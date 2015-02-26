@@ -41,6 +41,8 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
     private String activityName = "CorrectionActivity";
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private CharSequence mTitle;
+    String[] city = {"시도별","서울","부산","대구","광주","인천","대전","울산","경기","강원","제주","세종","충청북도","충청남도"
+            ,"전라북도","전라남도","경상북도","경상남도"};
     String[] bignameList = {"길이 및 관련량","질량 및 관련량","시간 및 주파수","전기·자기/전자파","온도 및 습도","음향, 초음파 및 진동","광량","전리방사선","물질량"};
     String[] middlenameList = {"복사선의 주파수,선형치수,각도,형상,복합형상,기타 길이 관련량","질량,힘,토크,압력,진공,부피,밀도,점도,유체유동,경도,충격","시간/주파수,속도/회전수",
             "직류,저항,용량 및 인덕턴스,교류 및 교류전력,기타 직류 및 저주파측정,전자기장,RF 측정,전자기장의 세기 및 안테나","접촉시 온도,비접촉시 온도,습도,수분",
@@ -85,6 +87,7 @@ public class CorrectionActivity extends ActionBarActivity implements NavigationD
         middleSpinner = (Spinner)findViewById(R.id.middle_spinner);
         smallSpinner = (Spinner)findViewById(R.id.small_spinner);
         citySpinner = (Spinner)findViewById(R.id.city_spinner);
+        citySpinner.setAdapter(new MyArrayAdapter(getApplicationContext(), android.R.layout.simple_spinner_item,city));
         citySpinner.setOnItemSelectedListener(new CityItemSelected());
         searchButton = (Button)findViewById(R.id.search_button);
         searchButton.setOnClickListener(new searchButtonListener());

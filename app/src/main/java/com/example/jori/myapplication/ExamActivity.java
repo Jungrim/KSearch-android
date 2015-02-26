@@ -1,46 +1,37 @@
 package com.example.jori.myapplication;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 
 public class ExamActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     private String activityName = "ExamActivity";
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private String[] bigList;
+    String[] city = {"시도별","서울","부산","대구","광주","인천","대전","울산","경기","강원","제주","세종","충청북도","충청남도"
+            ,"전라북도","전라남도","경상북도","경상남도"};
+
     private Spinner bigSpinner;
     private Spinner middleSpinner;
     private Button searchButton;
@@ -59,7 +50,7 @@ public class ExamActivity extends ActionBarActivity implements NavigationDrawerF
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_check);
+        setContentView(R.layout.activity_exam);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer_correction);
@@ -72,6 +63,7 @@ public class ExamActivity extends ActionBarActivity implements NavigationDrawerF
         bigSpinner = (Spinner)findViewById(R.id.big_spinner);
         middleSpinner = (Spinner)findViewById(R.id.middle_spinner);
         citySpinner = (Spinner)findViewById(R.id.city_spinner);
+        citySpinner.setAdapter(new MyArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,city));
         citySpinner.setOnItemSelectedListener(new CityItemSelected());
         searchButton = (Button)findViewById(R.id.search_button);
         searchButton.setOnClickListener(new searchButtonListener());

@@ -2,6 +2,7 @@ package com.example.jori.myapplication;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ public class MyArrayAdapter extends ArrayAdapter<String> {
     //어레이어댑터를 상속하고 TextView를 통해서 폰트의 설정을 변경할 수 있다.
     Context context;
     String[] items = new String[] {};
+    Typeface typeface = null;
 
     public MyArrayAdapter(final Context context,
                      final int textViewResourceId, final String[] objects) {
@@ -33,10 +35,10 @@ public class MyArrayAdapter extends ArrayAdapter<String> {
             convertView = inflater.inflate(
                     android.R.layout.simple_spinner_dropdown_item, parent, false);
         }
-
         TextView tv = (TextView) convertView.findViewById(android.R.id.text1);
         tv.setText(items[position]);
         tv.setTextColor(Color.BLACK);
+        tv.setTypeface(Typeface.SANS_SERIF);
         tv.setTextSize(15);
         tv.setHeight(50);
         return convertView;
@@ -55,6 +57,7 @@ public class MyArrayAdapter extends ArrayAdapter<String> {
                 .findViewById(android.R.id.text1);
         tv.setText(items[position]);
         tv.setText(items[position]);
+        tv.setTypeface(Typeface.SANS_SERIF);
         tv.setTextColor(Color.BLACK);
 //            tv.setTextSize(15);
         tv.setHeight(50);
