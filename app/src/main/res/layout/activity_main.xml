@@ -41,7 +41,6 @@
                 android:text="즐 겨 찾 기 목 록"
                 android:textAppearance  =  "?android:attr/textAppearanceLarge"
 
-                style="@style/Base.Widget.AppCompat.ActionButton"
                 android:layout_marginBottom="10dp" />
 
             <Button
@@ -56,7 +55,8 @@
                 android:textAppearance  =  "?android:attr/textAppearanceLarge"
 
 
-                android:layout_marginBottom="10dp" />
+                android:layout_marginBottom="10dp"
+               />
 
 
             <Button
@@ -71,15 +71,14 @@
 
 
                 android:layout_gravity="center"
-                android:layout_marginBottom="10dp" />
-
+                android:layout_marginBottom="10dp"
+               />
             <Button
                 android:layout_width="330dp"
 
                 android:layout_height="80dp"
                 android:id="@+id/image_material"
                 android:layout_gravity="center"
-
                 android:background="#ffffff"
                 android:drawableLeft = "@drawable/material"
                 android:text="표 준 물 질 생 성 기 관"
@@ -87,9 +86,9 @@
                 android:textAppearance  =  "?android:attr/textAppearanceLarge"
 
 
-                android:layout_marginBottom="10dp" />
-
-
+                android:layout_marginBottom="10dp"
+                android:focusable="false"
+              />
 
 
         </LinearLayout>
