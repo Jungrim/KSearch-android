@@ -34,11 +34,11 @@
                 android:id="@+id/image_correction"
                 android:layout_gravity="center"
 
+                android:textSize="20sp"
+
                 android:background="@drawable/btn_style"
                 android:drawableLeft = "@drawable/correction"
                 android:text="교 정 기 관"
-                android:textAppearance  =  "?android:attr/textAppearanceLarge"
-
 
                 android:layout_marginBottom="10dp"
                 android:padding="10dp" />
@@ -49,17 +49,18 @@
                 android:layout_height="80dp"
                 android:id="@+id/image_exam"
 
+                android:textSize="20sp"
+
                 android:background="@drawable/btn_style"
                 android:drawableLeft = "@drawable/exam"
                 android:text="시 험 기 관"
-                android:textAppearance  = "?android:attr/textAppearanceLarge"
-
-
                 android:layout_gravity="center"
                 android:layout_marginBottom="10dp"
                 android:padding="10dp" />
             <Button
                 android:layout_width="330dp"
+
+                android:textSize="20sp"
 
                 android:layout_height="80dp"
                 android:id="@+id/image_material"
@@ -68,9 +69,6 @@
                 android:drawableLeft = "@drawable/material"
                 android:text="표 준 물 질 생 성 기 관"
 
-                android:textAppearance  =  "?android:attr/textAppearanceLarge"
-
-
                 android:layout_marginBottom="10dp"
                 android:focusable="false"
                 android:padding="15dp" />
@@ -78,6 +76,9 @@
             <Button
                 android:layout_width="330dp"
                 android:layout_height="wrap_content"
+
+                android:textSize="20sp"
+
                 android:id="@+id/image_check"
                 android:layout_gravity="center"
                 android:baselineAlignBottom="false"
@@ -87,10 +88,10 @@
                 android:background="@drawable/btn_style"
                 android:drawableLeft = "@drawable/starimage"
                 android:text="즐 겨 찾 기 목 록"
-                android:textAppearance  =  "?android:attr/textAppearanceLarge"
 
                 android:layout_marginBottom="10dp"
-                android:padding="5dp" />
+                android:padding="5dp"
+                android:singleLine="false" />
 
 
         </LinearLayout>
