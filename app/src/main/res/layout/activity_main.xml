@@ -27,21 +27,6 @@
                 android:layout_marginBottom="30dp" />
 
 
-            <Button
-                android:layout_width="330dp"
-                android:layout_height="80dp"
-                android:id="@+id/image_check"
-                android:layout_gravity="center"
-                android:baselineAlignBottom="false"
-                android:clickable="false"
-                android:focusable="false"
-
-                android:background="#ffffff"
-                android:drawableLeft = "@drawable/check"
-                android:text="즐 겨 찾 기 목 록"
-                android:textAppearance  =  "?android:attr/textAppearanceLarge"
-
-                android:layout_marginBottom="10dp" />
 
             <Button
                 android:layout_width="330dp"
@@ -89,6 +74,22 @@
                 android:layout_marginBottom="10dp"
                 android:focusable="false"
               />
+
+            <Button
+                android:layout_width="330dp"
+                android:layout_height="80dp"
+                android:id="@+id/image_check"
+                android:layout_gravity="center"
+                android:baselineAlignBottom="false"
+                android:clickable="false"
+                android:focusable="false"
+
+                android:background="#ffffff"
+                android:drawableLeft = "@drawable/starimage"
+                android:text="즐 겨 찾 기 목 록"
+                android:textAppearance  =  "?android:attr/textAppearanceLarge"
+
+                android:layout_marginBottom="10dp" />
 
 
         </LinearLayout>
