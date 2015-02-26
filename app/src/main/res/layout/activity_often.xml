@@ -16,15 +16,6 @@
             android:layout_alignParentEnd="true"
         />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="삭제"
-            android:id="@+id/del_btn"
-            android:layout_below="@+id/listView"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
-
     </RelativeLayout>
     <fragment android:id="@+id/navigation_drawer_often"
         android:layout_width="@dimen/navigation_drawer_width" android:layout_height="match_parent"
