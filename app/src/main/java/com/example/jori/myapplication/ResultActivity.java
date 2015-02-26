@@ -197,6 +197,7 @@ public class ResultActivity extends ActionBarActivity implements NavigationDrawe
                 LatLng LOC = new LatLng(latitudeE6, longitudeE6);
                 mMap.addMarker(new MarkerOptions().position(LOC).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)).title(result.getCompanyName()));
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LOC, 16));
+
                 return;
             }
         }

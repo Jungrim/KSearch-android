@@ -17,7 +17,7 @@
         <fragment
             android:id="@+id/map"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="250dp"
             class="com.google.android.gms.maps.MapFragment"/>
 
         <ImageButton
@@ -25,9 +25,9 @@
             android:layout_height="wrap_content"
             android:id="@+id/call_button"
             android:background="@drawable/call"
-            android:layout_below="@+id/result_cb"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignTop="@+id/result_cb"
+            android:layout_toLeftOf="@+id/result_cb"
+            android:layout_toStartOf="@+id/result_cb" />
 
         <CheckBox
             android:layout_width="wrap_content"
@@ -40,35 +40,46 @@
 
         <TableLayout
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_below="@+id/map"
+            android:layout_height="wrap_content"
+            android:shrinkColumns="1"
+            android:stretchColumns = "1"
+            android:layout_below="@+id/call_button"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_toStartOf="@+id/call_button"
-            android:stretchColumns = "1"
-            android:layout_toLeftOf="@+id/call_button">
+            android:background="#000000">
             <View
                 android:layout_width="match_parent"
-                android:layout_height="2px"/>
+                android:layout_height="2px"
+                android:background="#000000"/>
+
             <TableRow
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent">
+
                 <TextView
                     android:layout_column="0"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:background="#666666"
                     android:textSize="16sp"
+                    android:background="#000000"
+                    android:textColor="#ffffff"
                     android:text="기관명">
                 </TextView>
                 <TextView
                     android:id="@+id/companyName_col"
                     android:layout_column="1"
+                    android:background="#666666"
+                    android:layout_marginRight="2px"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content">
                 </TextView>
             </TableRow>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2px"
+                android:background="#000000"/>
 
             <TableRow
                 android:layout_width="fill_parent"
@@ -78,17 +89,26 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:background="#666666"
+                    android:background="#000000"
+                    android:textColor="#ffffff"
                     android:textSize="16sp"
                     android:text="주소">
                 </TextView>
                 <TextView
                     android:id="@+id/companyAddr_col"
                     android:layout_column="1"
+                    android:background="#666666"
+                    android:layout_marginRight="2px"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content">
                 </TextView>
             </TableRow>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2px"
+                android:background="#000000"/>
+
             <TableRow
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent">
@@ -96,18 +116,27 @@
                     android:layout_column="0"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:background="#000000"
+                    android:textColor="#ffffff"
                     android:gravity="center"
-                    android:background="#666666"
                     android:textSize="16sp"
                     android:text="전화번호">
                 </TextView>
                 <TextView
                     android:id="@+id/companyNum_col"
                     android:layout_column="1"
+                    android:background="#666666"
+                    android:layout_marginRight="2px"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content">
                 </TextView>
             </TableRow>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2px"
+                android:background="#000000"/>
+
             <TableRow
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent">
@@ -116,17 +145,26 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+                    android:background="#000000"
+                    android:textColor="#ffffff"
                     android:textSize="16sp"
-                    android:background="#666666"
                     android:text="담당자">
                 </TextView>
                 <TextView
                     android:id="@+id/companyPer_col"
                     android:layout_column="1"
+                    android:background="#666666"
+                    android:layout_marginRight="2px"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content">
                 </TextView>
             </TableRow>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2px"
+                android:background="#000000"/>
+
             <TableRow
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent">
@@ -135,17 +173,25 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:background="#666666"
+                    android:background="#000000"
+                    android:textColor="#ffffff"
                     android:textSize="16sp"
                     android:text="측정능력">
                 </TextView>
                 <TextView
                     android:id="@+id/companyRange_col"
                     android:layout_column="1"
+                    android:background="#666666"
+                    android:layout_marginRight="2px"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content">
                 </TextView>
+
             </TableRow>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2px"
+                android:background="#000000"/>
 
         </TableLayout>
 
