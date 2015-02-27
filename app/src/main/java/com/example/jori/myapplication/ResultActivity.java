@@ -74,6 +74,8 @@ public class ResultActivity extends ActionBarActivity implements NavigationDrawe
     private ResultData result;
     private TextView company;
     private TextView addr;
+    private CharSequence mTitle;
+
     private TextView num;
     private TextView person;
     private TextView range;
@@ -85,6 +87,8 @@ public class ResultActivity extends ActionBarActivity implements NavigationDrawe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mTitle = getTitle();
+
         Intent intent = getIntent();
         result = (ResultData)intent.getSerializableExtra("Result");
         dbAdapter = new NotesDbAdapter(this);

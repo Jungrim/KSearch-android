@@ -38,7 +38,8 @@ public class MyArrayAdapter extends ArrayAdapter<String> {
         TextView tv = (TextView) convertView.findViewById(android.R.id.text1);
         tv.setText(items[position]);
         tv.setTextColor(Color.BLACK);
-        tv.setTypeface(Typeface.SANS_SERIF);
+        tv.setTypeface(Typeface.MONOSPACE);
+        tv.setBackgroundColor(Color.WHITE);
         tv.setTextSize(15);
         tv.setHeight(50);
         return convertView;
@@ -57,7 +58,7 @@ public class MyArrayAdapter extends ArrayAdapter<String> {
                 .findViewById(android.R.id.text1);
         tv.setText(items[position]);
         tv.setText(items[position]);
-        tv.setTypeface(Typeface.SANS_SERIF);
+        tv.setTypeface(Typeface.MONOSPACE);
         tv.setTextColor(Color.BLACK);
 //            tv.setTextSize(15);
         tv.setHeight(50);

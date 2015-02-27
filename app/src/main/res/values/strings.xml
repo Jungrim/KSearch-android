@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">KOLAS</string>
+    <string name="app_name">KOLCH</string>
     <string name="title_section1">검사기관 검색</string>
     <string name="title_section2">교정기관 검색</string>
     <string name="title_section3">시험기관 검색</string>
@@ -16,7 +16,8 @@
     <string name="title_activity_correction">교정 기관</string>
     <string name="title_activity_exam">시험 기관</string>
     <string name="title_activity_material">표준물질생성 기관</string>
-    <string name="title_activity_often">OftenActivity</string>
+    <string name="title_activity_often">즐겨찾기 목록</string>
+    <string name="title_activity_result">상세 정보</string>
     <string name="str_done">완료</string>
     <string-array name="city">
         <item>시도별</item>

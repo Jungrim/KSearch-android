@@ -159,12 +159,6 @@ public class CustomBaseAdapter extends BaseAdapter {
                         result.moveToNext();
                     }
                     result.close();
-
-                    Toast.makeText(
-                            mContext,
-                            "체크박스 Tag = " + v.getTag(),
-                            Toast.LENGTH_SHORT
-                    ).show();
                     break;
 
                 default:

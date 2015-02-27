@@ -3,6 +3,7 @@ package com.example.jori.myapplication;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Paint;
 import android.media.Image;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
@@ -60,6 +61,7 @@ public class MainActivity extends ActionBarActivity
         Button correct_btn = (Button)findViewById(R.id.image_correction);
         Button exam_btn = (Button)findViewById(R.id.image_exam);
         Button material_btn = (Button)findViewById(R.id.image_material);
+
         ImageButton kolas_btn = (ImageButton)findViewById(R.id.image_kolas);
 
         kolas_btn.setOnClickListener(new ImageButton.OnClickListener(){
