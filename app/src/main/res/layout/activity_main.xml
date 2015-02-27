@@ -20,7 +20,7 @@
 
             <ImageButton
                 android:layout_width="330dp"
-                android:layout_height="wrap_content"
+                android:layout_height="60dp"
                 android:id="@+id/image_kolas"
                 android:background="@drawable/kolas"
                 android:layout_gravity="center"
