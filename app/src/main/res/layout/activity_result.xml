@@ -46,11 +46,11 @@
             android:layout_below="@+id/call_button"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:background="#000000">
+            android:background="#0E4EAD">
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2px"
-                android:background="#000000"/>
+                android:background="#0E4EAD"/>
 
             <TableRow
                 android:layout_width="fill_parent"
@@ -60,16 +60,18 @@
                     android:layout_column="0"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:typeface="monospace"
                     android:gravity="center"
                     android:textSize="16sp"
-                    android:background="#000000"
+                    android:background="#0E4EAD"
                     android:textColor="#ffffff"
                     android:text="기관명">
                 </TextView>
                 <TextView
                     android:id="@+id/companyName_col"
                     android:layout_column="1"
-                    android:background="#666666"
+                    android:background="#ffffff"
+                    android:typeface="monospace"
                     android:layout_marginRight="2px"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content">
@@ -79,7 +81,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2px"
-                android:background="#000000"/>
+                android:background="#0E4EAD"/>
 
             <TableRow
                 android:layout_width="fill_parent"
@@ -89,7 +91,8 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:background="#000000"
+                    android:typeface="monospace"
+                    android:background="#0E4EAD"
                     android:textColor="#ffffff"
                     android:textSize="16sp"
                     android:text="주소">
@@ -97,7 +100,8 @@
                 <TextView
                     android:id="@+id/companyAddr_col"
                     android:layout_column="1"
-                    android:background="#666666"
+                    android:background="#ffffff"
+                    android:typeface="monospace"
                     android:layout_marginRight="2px"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content">
@@ -107,7 +111,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2px"
-                android:background="#000000"/>
+                android:background="#0E4EAD"/>
 
             <TableRow
                 android:layout_width="fill_parent"
@@ -116,7 +120,8 @@
                     android:layout_column="0"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:background="#000000"
+                    android:background="#0E4EAD"
+                    android:typeface="monospace"
                     android:textColor="#ffffff"
                     android:gravity="center"
                     android:textSize="16sp"
@@ -125,7 +130,8 @@
                 <TextView
                     android:id="@+id/companyNum_col"
                     android:layout_column="1"
-                    android:background="#666666"
+                    android:background="#ffffff"
+                    android:typeface="monospace"
                     android:layout_marginRight="2px"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content">
@@ -135,7 +141,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2px"
-                android:background="#000000"/>
+                android:background="#0E4EAD"/>
 
             <TableRow
                 android:layout_width="fill_parent"
@@ -145,7 +151,8 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:background="#000000"
+                    android:typeface="monospace"
+                    android:background="#0E4EAD"
                     android:textColor="#ffffff"
                     android:textSize="16sp"
                     android:text="담당자">
@@ -153,7 +160,7 @@
                 <TextView
                     android:id="@+id/companyPer_col"
                     android:layout_column="1"
-                    android:background="#666666"
+                    android:background="#ffffff"
                     android:layout_marginRight="2px"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content">
@@ -163,7 +170,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2px"
-                android:background="#000000"/>
+                android:background="#0E4EAD"/>
 
             <TableRow
                 android:layout_width="fill_parent"
@@ -173,7 +180,8 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:background="#000000"
+                    android:typeface="monospace"
+                    android:background="#0E4EAD"
                     android:textColor="#ffffff"
                     android:textSize="16sp"
                     android:text="측정능력">
@@ -181,7 +189,8 @@
                 <TextView
                     android:id="@+id/companyRange_col"
                     android:layout_column="1"
-                    android:background="#666666"
+                    android:background="#ffffff"
+                    android:typeface="monospace"
                     android:layout_marginRight="2px"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content">
@@ -191,7 +200,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2px"
-                android:background="#000000"/>
+                android:background="#0E4EAD"/>
 
         </TableLayout>
 

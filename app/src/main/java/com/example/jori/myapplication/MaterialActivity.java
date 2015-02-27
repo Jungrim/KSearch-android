@@ -69,7 +69,7 @@ public class MaterialActivity extends ActionBarActivity implements NavigationDra
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_material);
+        setContentView(R.layout.activity_correction);
 
         urlConnector = new HttpUrlConnect();
 
